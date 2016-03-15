@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <FrameLayout
+        android:id="@+id/mainContainer"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+<FrameLayout
+    android:overScrollMode="always"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+            <!--<qualteh.com.scrollviewprototype.VScroll android:layout_height="wrap_content"-->
+                                                     <!--android:layout_width="wrap_content"-->
+                                                     <!--android:id="@+id/vScroll" android:fadeScrollbars="false">-->
+                <!--<qualteh.com.scrollviewprototype.HScroll android:id="@+id/hScroll"-->
+                                             <!--android:layout_width="wrap_content" android:layout_height="wrap_content"-->
+                                                         <!--android:fadeScrollbars="false">-->
+<!--<qualteh.com.scrollviewprototype.ZoomLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+                    <FrameLayout
+                        android:id="@+id/uiContainer"
+
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/vectorTest"
+                            android:scaleType="center"
+                            android:layout_width="1600dp"
+                            android:layout_height="900dp"
+                            android:src="@drawable/vector_drawable_test"/>
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="New Button"
+                            android:id="@+id/button1"
+                            android:layout_gravity="start"/>
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="New Button2"
+                            android:id="@+id/button2"
+                            android:layout_gravity="bottom|right"/>
+
+                    </FrameLayout>
+
+
+<!--</qualteh.com.scrollviewprototype.ZoomLayout>-->
+                <!--</qualteh.com.scrollviewprototype.HScroll>-->
+            <!--</qualteh.com.scrollviewprototype.VScroll>-->
+    </FrameLayout>
+    </FrameLayout>
