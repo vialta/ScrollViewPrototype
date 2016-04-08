@@ -1,76 +1,116 @@
+// Decompiled by Jad v1.5.8e. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.geocities.com/kpdus/jad.html
+// Decompiler options: braces fieldsfirst space lnc 
+
 package qualteh.com.scrollviewprototype;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
-import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import qualteh.com.scrollviewprototype.Model.Building;
+import qualteh.com.scrollviewprototype.Model.MainCoordinates;
+import qualteh.com.scrollviewprototype.Model.MapModel;
+import qualteh.com.scrollviewprototype.Model.Storage;
 
-import static qualteh.com.scrollviewprototype.ScrollableImageActivity.getActivityContext;
+// Referenced classes of package qualteh.com.scrollviewprototype:
+//            DemoMachine, ScrollableImageActivity
 
-/**
- * Created by Virgil Tanase on 17.03.2016.
- */
-class GraphicDrawer {
+class GraphicDrawer
+{
 
-
-    public static void drawRandomDrawable ( ImageView img, FrameLayout frame ) {
-        Paint paint = new Paint(  );
-        paint.setColor( Color.BLACK );
-        drawRandomDrawable( img, frame, paint );
+    GraphicDrawer()
+    {
     }
 
-    public static void drawRandomDrawable (ImageView img, FrameLayout frame, final Paint paint ) {
+    public static void drawMap(ImageView imageView, final FrameLayout frameLayout, final Paint paint, final MapModel mapModel, DemoMachine demoMachine, double d)
+    {
+        paint.setStrokeJoin( Paint.Join.ROUND);
+        imageView.setBackgroundColor( 0xff444444 );
+        Object obj = mapModel.getMainCoordinates().getCoordinates();
+        demoMachine = new DemoMachine();
+//        for (obj = ((List) (obj)).iterator(); ((Iterator) (obj)).hasNext(); demoMachine.add( Integer.valueOf(((Double)((Iterator) (obj)).next()).intValue()))
+//                ) { }
 
-        paint.setStrokeWidth( 20f );
-        paint.setStrokeJoin( Paint.Join.ROUND );
+        final FrameLayout frame = frameLayout;
+        final MapModel mMapData = mapModel;
+        final List buildings = mapModel.getBuildings();
 
+        final List<Double> points = mapModel.getMainCoordinates().getCoordinates();
+        final List<Storage> storages = mapModel.getStorage();
 
-        img.setBackgroundColor( Color.DKGRAY );
+        String s="";
+        for(int i=0;i<points.size();i++){
+            s+=points.get( i ).toString();
+        }
+        Log.d("I'mScrewed",s);
 
-        final List<Float> points = new ArrayList<>(  );
-
-        //5 points = 10 values
-        points.add (  300f );
-        points.add (  100f );
-        points.add (   50f );
-        points.add (  600f );
-        points.add (  300f );
-        points.add ( 1100f );
-        points.add ( 1500f );
-        points.add ( 1100f );
-        points.add( 1500f );
-        points.add( 100f );
-
-        final List<List<Float>> floatList = drawBuildings( frame );
-
-        img.setImageDrawable( new Drawable() {
+        imageView.setImageDrawable( new Drawable() {
             @Override
             public void draw ( Canvas canvas ) {
-                //paint.setStrokeWidth( 20f );
-                paint.setStrokeJoin( Paint.Join.ROUND );
-                paint.setColor( Color.RED );
+                paint.setStrokeWidth( mMapData.getMainCoordinates().getStrokeWidth().intValue() );
+                paint.setColor( Color.parseColor( mMapData.getMainCoordinates().getStrokeColor() ) );
                 for ( int i = 0 ; i < points.size() - 2 ; i += 2 ) {
-                    canvas.drawLine( points.get( i ), points.get( i + 1 ), points.get( i + 2 ), points.get( i + 3 ), paint );
+                    Log.d( "Main Coords Draw", ( new StringBuilder() ).append( points.get( i ) ).append( " " ).append( points.get( i + 1 ) ).toString() );
+                    canvas.drawLine(   Math.round(points.get( i )) ,  Math.round( points.get( i + 1 )), Math.round( points.get( i + 2 )), Math.round( points.get( i + 3 )), paint );
                 }
-                canvas.drawLine( points.get( points.size() - 2 ), points.get( points.size() - 1 ), points.get( 0 ), points.get( 1 ), paint );
-                paint.setStrokeWidth( 5f );
-                paint.setColor( Color.BLUE );
-                for(int j=0;j<floatList.size();j++) {
-                    for ( int i = 0 ; i < floatList.get( j ).size() - 2 ; i += 2 ) {
-                        canvas.drawLine( floatList.get( j ).get( i ), floatList.get( j ).get( i + 1 ), floatList.get( j ).get( i + 2 ), floatList.get( j ).get( i + 3 ), paint );
+
+                canvas.drawLine( Math.round(points.get( points.size() - 2 ) ), Math.round(points.get( points.size() - 1 ) ), Math.round(points.get( 0 ) ), Math.round(points.get( 1 ) ), paint );
+                Button button;
+                for ( Iterator iterator = buildings.iterator() ; iterator.hasNext() ; frame.addView( button ) ) {
+                    Building building = ( Building ) iterator.next();
+                    paint.setStrokeWidth( building.getStrokeWidth().intValue() );
+                    paint.setColor( Color.parseColor( building.getStrokeColor() ) );
+                    for ( int j = 0 ; j < building.getCoordinates().size() - 2 ; j += 2 ) {
+                        canvas.drawLine( ( ( Double ) building.getCoordinates().get( j ) ).intValue(), ( ( Double ) building.getCoordinates().get( j + 1 ) ).intValue(), ( ( Double ) building.getCoordinates().get( j + 2 ) ).intValue(), ( ( Double ) building.getCoordinates().get( j + 3 ) ).intValue(), paint );
                     }
-                    canvas.drawLine(  floatList.get( j ).get( floatList.get( j ).size() - 2 ),  floatList.get( j ).get( floatList.get( j ).size() - 1 ),  floatList.get( j ).get( 0 ),  floatList.get( j ).get( 1 ), paint );
+
+                    canvas.drawLine( ( ( Double ) building.getCoordinates().get( building.getCoordinates().size() - 2 ) ).intValue(), ( ( Double ) building.getCoordinates().get( building.getCoordinates().size() - 1 ) ).intValue(), ( ( Double ) building.getCoordinates().get( 0 ) ).intValue(), ( ( Double ) building.getCoordinates().get( 1 ) ).intValue(), paint );
+                    button = new Button( ScrollableImageActivity.getActivityContext() );
+                    FrameLayout.LayoutParams layoutparams = new FrameLayout.LayoutParams( GraphicDrawer.scaleX( building.getCoordinates() ), GraphicDrawer.scaleY( building.getCoordinates() ) );
+                    layoutparams.setMargins( GraphicDrawer.minX( building.getCoordinates() ), GraphicDrawer.minY( building.getCoordinates() ), 0, 0 );
+                    button.setLayoutParams( layoutparams );
+                    button.setTag( building.getName() );
+                    button.setText( building.getName() );
+                    button.setEnabled( false );
+                    button.setTextSize( ( float ) Math.sqrt( GraphicDrawer.scaleX( building.getCoordinates() ) ) / 2.0F );
+                    button.getBackground().setAlpha( 64 );
+                }
+
+                Button button1;
+                for ( Iterator iterator1 = storages.iterator() ; iterator1.hasNext() ; frame.addView( button1 ) ) {
+                    Storage storage = ( Storage ) iterator1.next();
+                    paint.setStrokeWidth( storage.getStrokeWidth().intValue() );
+                    paint.setColor( Color.parseColor( storage.getStrokeColor() ) );
+                    for ( int k = 0 ; k < storage.getCoordinates().size() - 2 ; k += 2 ) {
+                        canvas.drawLine( ( ( Double ) storage.getCoordinates().get( k ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 1 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 2 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 3 ) ).intValue(), paint );
+                    }
+
+                    canvas.drawLine( ( ( Double ) storage.getCoordinates().get( storage.getCoordinates().size() - 2 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( storage.getCoordinates().size() - 1 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( 0 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( 1 ) ).intValue(), paint );
+                    button1 = new Button( ScrollableImageActivity.getActivityContext() );
+                    FrameLayout.LayoutParams layoutparams1 = new FrameLayout.LayoutParams( GraphicDrawer.scaleX( storage.getCoordinates() ), GraphicDrawer.scaleY( storage.getCoordinates() ) );
+                    layoutparams1.setMargins( GraphicDrawer.minX( storage.getCoordinates() ), GraphicDrawer.minY( storage.getCoordinates() ), 0, 0 );
+                    button1.setLayoutParams( layoutparams1 );
+                    button1.setTag( storage.getId() );
+                    button1.setText( storage.getId() );
+                    button1.setTextSize( ( float ) Math.sqrt( GraphicDrawer.scaleX( storage.getCoordinates() ) ) / 2.0F );
+                    final Button finalButton = button1;
+                    button1.setOnClickListener( new View.OnClickListener() {
+                        @Override
+                        public void onClick ( View v ) {
+                            Toast.makeText( ScrollableImageActivity.getActivityContext(), ( CharSequence ) finalButton.getTag(), Toast.LENGTH_SHORT ).show();
+                        }
+                    });
                 }
             }
 
@@ -86,100 +126,92 @@ class GraphicDrawer {
 
             @Override
             public int getOpacity () {
-                return PixelFormat.OPAQUE;
+                return 0;
             }
         } );
     }
 
-    public static List<List<Float>> drawBuildings (FrameLayout frame) {
-        final List<Button> imageViewsList = new ArrayList<>();
-        final List<List<Float>> pointStringsList = new ArrayList<>(  );
-
-        List<Float> pointStringsA = new ArrayList<>(  );
-
-        pointStringsA.add( 100f );
-        pointStringsA.add( 100f );
-        pointStringsA.add( 200f );
-        pointStringsA.add( 100f );
-        pointStringsA.add( 200f );
-        pointStringsA.add( 200f );
-        pointStringsA.add( 100f );
-        pointStringsA.add( 200f );
-        pointStringsList.add( pointStringsA );
-        imageViewsList.add(
-                new Button( getActivityContext() ) );
-        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams( 100, 100 );
-        lp.setMargins( 100, 100, 0, 0 );
-        imageViewsList.get( 0 ).setLayoutParams( lp );
-        imageViewsList.get( 0 ).setTag( "Image1" );
-        imageViewsList.get( 0 ).setText( "Image1" );
-
-
-        imageViewsList.get( 0 ).setContentDescription( "Image1" );
-        imageViewsList.get( 0 ).setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick ( View v ) {
-                Toast.makeText( getActivityContext(), ( CharSequence ) imageViewsList.get( 0 ).getTag(), Toast.LENGTH_SHORT ).show();
+    private static int maxX(List list)
+    {
+        int j = ((Double)list.get(0)).intValue();
+        for (int i = 0; i < list.size();)
+        {
+            int k = j;
+            if (j < ((Double)list.get(i)).intValue())
+            {
+                k = ((Double)list.get(i)).intValue();
             }
-        } );
-        frame.addView( imageViewsList.get( 0 ) );
+            i += 2;
+            j = k;
+        }
 
-        List<Float> pointStringsB = new ArrayList<>(  );
-        pointStringsB.add( 300f );
-        pointStringsB.add( 300f );
-        pointStringsB.add( 400f );
-        pointStringsB.add( 300f );
-        pointStringsB.add( 400f );
-        pointStringsB.add( 400f );
-        pointStringsB.add( 300f );
-        pointStringsB.add( 400f );
-        pointStringsList.add( pointStringsB );
-        imageViewsList.add(
-                new Button( getActivityContext() ) );
-        FrameLayout.LayoutParams lp2 = new FrameLayout.LayoutParams(100,100);
-        lp2.setMargins( 300, 300, 0, 0 );
-        imageViewsList.get( 1 ).setLayoutParams( lp2 );
-        imageViewsList.get( 1 ).setTag( "Image2" );
-
-        imageViewsList.get( 1 ).setText("Image2" );
-        imageViewsList.get( 1 ).setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick ( View v ) {
-                Toast.makeText( getActivityContext(), ( CharSequence ) imageViewsList.get( 1 ).getTag(), Toast.LENGTH_SHORT ).show();
-            }
-        } );
-        frame.addView( imageViewsList.get( 1 ) );
-
-        List<Float> pointStringsC = new ArrayList<>(  );
-        pointStringsC.add( 1300f );
-        pointStringsC.add( 1300f );
-        pointStringsC.add( 1400f );
-        pointStringsC.add( 1300f );
-        pointStringsC.add( 1400f );
-        pointStringsC.add( 1400f );
-        pointStringsC.add( 1300f );
-        pointStringsC.add( 1400f );
-        pointStringsList.add( pointStringsC );
-        imageViewsList.add(
-                new Button( getActivityContext() ) );
-        FrameLayout.LayoutParams lp3 = new FrameLayout.LayoutParams(100,100);
-        lp3.setMargins( 1300, 1300, 0, 0 );
-        imageViewsList.get( 2 ).setLayoutParams( lp3 );
-        imageViewsList.get( 2 ).setTag( "Image3" );
-
-        imageViewsList.get( 2 ).setText("Image3" );
-        imageViewsList.get( 2 ).setOnClickListener( new View.OnClickListener() {
-            @Override
-            public void onClick ( View v ) {
-                Toast.makeText( getActivityContext(), ( CharSequence ) imageViewsList.get( 2 ).getTag(), Toast.LENGTH_SHORT ).show();
-            }
-        } );
-        frame.addView( imageViewsList.get( 2 ) );
-
-        return pointStringsList;
+        return j;
     }
 
-    public void drawDeposits (final Paint paint) {
+    private static int maxY(List list)
+    {
+        int j = ((Double)list.get(1)).intValue();
+        for (int i = 1; i < list.size();)
+        {
+            int k = j;
+            if (j < ((Double)list.get(i)).intValue())
+            {
+                k = ((Double)list.get(i)).intValue();
+            }
+            i += 2;
+            j = k;
+        }
+
+        return j;
     }
+
+    private static int minX(List list)
+    {
+        int j = ((Double)list.get(0)).intValue();
+        for (int i = 0; i < list.size();)
+        {
+            int k = j;
+            if (j > ((Double)list.get(i)).intValue())
+            {
+                k = ((Double)list.get(i)).intValue();
+            }
+            i += 2;
+            j = k;
+        }
+
+        return j;
+    }
+
+    private static int minY(List list)
+    {
+        int j = ((Double)list.get(1)).intValue();
+        for (int i = 1; i < list.size();)
+        {
+            int k = j;
+            if (j > ((Double)list.get(i)).intValue())
+            {
+                k = ((Double)list.get(i)).intValue();
+            }
+            i += 2;
+            j = k;
+        }
+
+        return j;
+    }
+
+    private static int scaleX(List list)
+    {
+        int i = minX(list);
+        return maxX(list) - i;
+    }
+
+    private static int scaleY(List list)
+    {
+        int i = minY(list);
+        return maxY(list) - i;
+    }
+
+
+
 
 }

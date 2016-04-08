@@ -1,10 +1,21 @@
+// Decompiled by Jad v1.5.8e. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.geocities.com/kpdus/jad.html
+// Decompiler options: braces fieldsfirst space lnc 
+
 package qualteh.com.scrollviewprototype;
 
-import android.graphics.Color;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Canvas;
+import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -12,220 +23,525 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import java.util.List;
+import qualteh.com.scrollviewprototype.API.ApiInterface;
+import qualteh.com.scrollviewprototype.Data.DbHelper;
+import qualteh.com.scrollviewprototype.Model.Building;
+import qualteh.com.scrollviewprototype.Model.MainCoordinates;
+import qualteh.com.scrollviewprototype.Model.MapModel;
+import qualteh.com.scrollviewprototype.Model.Position;
+import qualteh.com.scrollviewprototype.Model.Storage;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-/**
- * Created by Virgil Tanase on 10.03.2016.
- */
-public class ScrollableImageFragment extends Fragment implements View.OnClickListener, ScaleGestureDetector.OnScaleGestureListener{
+// Referenced classes of package qualteh.com.scrollviewprototype:
+//            GraphicDrawer, DemoMachine, Consts
 
-    public ScaleGestureDetector scaleDetector;
+public class ScrollableImageFragment extends Fragment
+    implements View.OnClickListener, ScaleGestureDetector.OnScaleGestureListener
+{
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener
+    {
 
-    // Maximum and Minimum Zoom
-    private static final float MIN_ZOOM = 1.0f;
-    private static final float MAX_ZOOM = 3.0f;
 
-    private static final int SCREEN_WIDTH  = 3200;
-    private static final int SCREEN_HEIGHT = 1800;
+        public boolean onDoubleTap(MotionEvent motionevent)
+        {
+            return true;
+        }
 
-    private float mx, my;
-    private float scale = 1.0f;
-    private float lastScaleFactor = 0f;
+        public boolean onDown(MotionEvent motionevent)
+        {
+            return true;
+        }
 
-    private final Paint mPaint = new Paint(  );
 
-    @Bind( R.id.uiContainer ) FrameLayout mFrameLayout;
-    @Bind( R.id.contentContainer ) FrameLayout mainContainer;
-    @Bind(R.id.vectorTest) ImageView img;
+    }
 
-    private Button b2;
 
+    private static final float MAX_ZOOM = 3F;
+    private static final float MIN_ZOOM = 1F;
+    private static double SCREEN_DENSITY;
+    private static int SCREEN_HEIGHT;
+    private static int SCREEN_WIDTH;
+    private boolean animationIsRunning;
+    private long bottomLimit;
+    private DemoMachine demoMachine;
+    @Bind( R.id.errorText )TextView firstTimeTextError;
     public GestureDetector gestureDetector;
+    @Bind( R.id.vectorTest )ImageView img;
+    private float lastScaleFactor;
+    private long lastScaleTimestamp;
+    private long leftLimit;
+    @Bind( R.id.uiContainer )FrameLayout mFrameLayout;
+    private MapModel mMapData;
+    private final Paint mPaint = new Paint();
 
-    public static ScrollableImageFragment newInstance () {
+    private ImageView machineView;
+    @Bind( R.id.contentContainer )FrameLayout mainContainer;
+    private float mx;
+    private float my;
+    private long rightLimit;
+    private float scale;
+    public ScaleGestureDetector scaleDetector;
+    private int scaleDirection;
+    private long topLimit;
+
+    public ScrollableImageFragment()
+    {
+        scaleDirection = -1;
+        scale = 1.0F;
+        lastScaleFactor = 0.0F;
+        animationIsRunning = false;
+        lastScaleTimestamp = System.currentTimeMillis();
+    }
+
+    private int calcScrollToX(float f)
+    {
+        f = (float)mainContainer.getScrollX() + (mx - f);
+        if (f < (float)leftLimit)
+        {
+            return (int)leftLimit;
+        }
+        if (f > (float)rightLimit)
+        {
+            return (int)rightLimit;
+        } else
+        {
+            return 0;
+        }
+    }
+
+    private int calcScrollToY(float f)
+    {
+        f = (float)mainContainer.getScrollY() + (my - f);
+        if ((long)Math.round(f) < topLimit)
+        {
+            Log.d("calcScrollToY", (new StringBuilder()).append(f).append(" ").append(topLimit).toString());
+            return (int)topLimit;
+        }
+        if ((long)Math.round(f) > bottomLimit)
+        {
+            Log.d("calcScrollToY", (new StringBuilder()).append(f).append(" ").append(bottomLimit).toString());
+            return (int)bottomLimit;
+        } else
+        {
+            return 0;
+        }
+    }
+
+    private boolean checkBoundsX(float f)
+    {
+        f = (float)mainContainer.getScrollX() + (mx - f);
+        leftLimit = Math.round(((scale * (float)(SCREEN_WIDTH / 4)) / 2.0F) * ((scale - 1.0F) * 4F) * -1F);
+        rightLimit = Math.round(((float)leftLimit + (float)SCREEN_WIDTH * scale) - (float)getResources().getDisplayMetrics().widthPixels);
+        return (long)Math.round(f) > leftLimit && (long)Math.round(f) < rightLimit;
+    }
+
+    private boolean checkBoundsY(float f)
+    {
+        f = (float)mainContainer.getScrollY() + (my - f);
+        topLimit = Math.round(scale * (float)(SCREEN_HEIGHT / 8) * ((scale - 1.0F) * 4F) * -1F);
+        bottomLimit = Math.round(((float)topLimit + (float)SCREEN_HEIGHT * scale) - (float)getResources().getDisplayMetrics().heightPixels);
+        Log.d( "Height", ( new StringBuilder() ).append( f ).append( " " ).append( topLimit ).toString() );
+        return (long)Math.round(f) > topLimit && (long)Math.round(f) < bottomLimit;
+    }
+
+    private void connectionFailureAnimation()
+    {
+        firstTimeTextError.setVisibility(View.VISIBLE);
+        AlphaAnimation alphaanimation = new AlphaAnimation(0.0F, 1.0F);
+        alphaanimation.setRepeatMode(2);
+        alphaanimation.setRepeatCount(1);
+        alphaanimation.setFillAfter(true);
+        alphaanimation.setStartOffset(2000L);
+        alphaanimation.setDuration(1000L);
+        firstTimeTextError.setAnimation(alphaanimation);
+    }
+
+    public static ScrollableImageFragment newInstance()
+    {
         return new ScrollableImageFragment();
     }
 
-    @Override
-    public void onCreate ( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
+    private void setDatabaseByResponse(boolean flag)
+    {
+        SharedPreferences sharedpreferences;
+        DbHelper dbhelper;
+        boolean isFirstTime;
+        sharedpreferences = getContext().getSharedPreferences( "qualteh.com.scrollviewprototype", 0 );
+        isFirstTime = sharedpreferences.getBoolean("PREFS_FIRST_TIME", true);
+        dbhelper = new DbHelper(getContext());
+        final SQLiteDatabase sqlitedatabase = getActivity().openOrCreateDatabase(dbhelper.getDatabaseName(), 0, null);
+        if (!isFirstTime){
+            if (flag && !dbhelper.isCurrentVersion(sqlitedatabase, mMapData.getVersion()))
+            {
+                dbhelper.updateMapModel(sqlitedatabase, mMapData, mMapData.getId());
+            }
+        }
+        else{
+            if (!flag)
+            {
+                connectionFailureAnimation();
+                return;
+            }
+            dbhelper.onCreate( sqlitedatabase );
+            dbhelper.addMapModel( sqlitedatabase, mMapData );
+            sharedpreferences.edit().putBoolean("PREFS_FIRST_TIME", false).apply();
+        }
+        mMapData = dbhelper.getMapModel(sqlitedatabase);
+        GraphicDrawer.drawMap(img, mFrameLayout, mPaint, mMapData, demoMachine, SCREEN_DENSITY);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView ( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
-        View view = inflater.inflate( R.layout.activity_main,container,false );
-        ButterKnife.bind( this, view );
-        mFrameLayout.setLayoutParams( new FrameLayout.LayoutParams( Math.round( SCREEN_WIDTH * scale ), Math.round( SCREEN_HEIGHT * scale ) ) );
+    public void demoButtonClicked()
+    {
+        if (!animationIsRunning)
+        {
+            demoMachine.newRandomCoordinate();
+            demoMachine.getMachinePosition().updateUIPositionByDensity(getResources().getDisplayMetrics().density);
+            TranslateAnimation translateanimation = new TranslateAnimation(0.0F, (float)demoMachine.getMachinePosition().getUiX() - machineView.getX(), 0.0F, (float)demoMachine.getMachinePosition().getUiY() - machineView.getY());
+            translateanimation.setDuration(1000L);
+            translateanimation.setFillBefore(false);
+            translateanimation.setFillEnabled(true);
+            translateanimation.setFillAfter(false);
+            translateanimation.setAnimationListener(new Animation.AnimationListener() {
+
+                final ScrollableImageFragment scrollableImageFragment;
+
+                public void onAnimationEnd(Animation animation)
+                {
+                    machineView.setX(demoMachine.getMachinePosition().getUiX());
+                    machineView.setY(demoMachine.getMachinePosition().getUiY());
+                    animationIsRunning = false;
+                }
+
+                public void onAnimationRepeat(Animation animation)
+                {
+                }
+
+                public void onAnimationStart(Animation animation)
+                {
+                    animationIsRunning = true;
+                }
+
+            
+            {
+                scrollableImageFragment = ScrollableImageFragment.this;
+            }
+            });
+            machineView.startAnimation(translateanimation);
+        }
+    }
+
+    public View getMachineView()
+    {
+        return machineView;
+    }
+
+    public void handleTouchEvent(MotionEvent motionEvent)
+    {
+        switch ( motionEvent.getAction() ){
+            case MotionEvent.ACTION_DOWN:
+                mx = motionEvent.getX();
+                my = motionEvent.getY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                if (motionEvent.getPointerCount() < 2 && System.currentTimeMillis() - lastScaleTimestamp > 500L)
+                {
+                    float curX = motionEvent.getX();
+                    float curY = motionEvent.getY();
+                    if (checkBoundsX(curX))
+                    {
+                        mainContainer.scrollBy((int)(mx - curX), 0);
+                    }
+                    if (checkBoundsY(curY))
+                    {
+                        mainContainer.scrollBy(0, (int)(my - curY));
+                    }
+                    mx = curX;
+                    my = curY;
+                }
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                lastScaleTimestamp = System.currentTimeMillis();
+                return;
+            case MotionEvent.ACTION_UP:
+                float curX = motionEvent.getX();
+                float curY = motionEvent.getY();
+                Log.d("TAG", (new StringBuilder()).append("UP ").append((float)mainContainer.getScrollY() + (my - curY)).append(" ").append(leftLimit).append(" ").append(checkBoundsX(curX)).append(" ").append(checkBoundsY(curY)).toString());
+                int i = mainContainer.getScrollX();
+                int j = mainContainer.getScrollY();
+                if (!checkBoundsX(curX))
+                {
+                    Log.d("TAG", "Scroll X UP");
+                    i = calcScrollToX(curX);
+                }
+                if (!checkBoundsY(curY))
+                {
+                    Log.d("TAG", "Scroll Y UP");
+                    j = calcScrollToY(curY);
+                }
+                mainContainer.scrollTo(i, j);
+                break;
+            default:
+                break;
+        }
+    }
+
+    void logBuildingCoords()
+    {
+        String s = "[";
+        for (int i = 0; i < mMapData.getBuildings().size(); i++)
+        {
+            int j = 0;
+            while (j < ((Building)mMapData.getBuildings().get(i)).getCoordinates().size()) 
+            {
+                s = (new StringBuilder()).append(s).append(((Building)mMapData.getBuildings().get(i)).getCoordinates().get(j)).toString();
+                if (j % 2 == 1)
+                {
+                    s = (new StringBuilder()).append(s).append("][").toString();
+                } else
+                {
+                    s = (new StringBuilder()).append(s).append(" , ").toString();
+                }
+                j++;
+            }
+            s = (new StringBuilder()).append(s).append("/").toString();
+        }
+
+        Log.d("WTF", s);
+    }
+
+    void logMainCoords()
+    {
+        String s = "[";
+        int i = 0;
+        while (i < mMapData.getMainCoordinates().getCoordinates().size()) 
+        {
+            s = (new StringBuilder()).append(s).append(mMapData.getMainCoordinates().getCoordinates().get(i)).toString();
+            if (i % 2 == 1)
+            {
+                s = (new StringBuilder()).append(s).append("][").toString();
+            } else
+            {
+                s = (new StringBuilder()).append(s).append(" , ").toString();
+            }
+            i++;
+        }
+        Log.d("WTF", s);
+    }
+
+    void logStorageCoords()
+    {
+        String s = "[";
+        for (int i = 0; i < mMapData.getStorage().size(); i++)
+        {
+            int j = 0;
+            while (j < ((Storage)mMapData.getStorage().get(i)).getCoordinates().size()) 
+            {
+                s = (new StringBuilder()).append(s).append(((Storage)mMapData.getStorage().get(i)).getCoordinates().get(j)).toString();
+                if (j % 2 == 1)
+                {
+                    s = (new StringBuilder()).append(s).append("][").toString();
+                } else
+                {
+                    s = (new StringBuilder()).append(s).append(" , ").toString();
+                }
+                j++;
+            }
+            s = (new StringBuilder()).append(s).append("/").toString();
+        }
+
+        Log.d("WTF", s);
+    }
+
+    public void onClick(View view)
+    {
+        demoButtonClicked();
+    }
+
+    public void onCreate(Bundle bundle)
+    {
+        super.onCreate(bundle);
+    }
+
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewgroup, Bundle bundle)
+    {
+        View view = layoutInflater.inflate(R.layout.activity_main, viewgroup, false);
+        ButterKnife.bind(this, view);
+        Consts.SIZE_MULTIPLIER = ((double)getResources().getDisplayMetrics().widthPixels * 1.0D) / (double)((float)Consts.DIAGRAM_WIDTH * getResources().getDisplayMetrics().density + 20F * getResources().getDisplayMetrics().density);
+        Log.d("TEST", (new StringBuilder()).append("").append(Consts.SIZE_MULTIPLIER).append(" ").append(" ").append(getResources().getDisplayMetrics().widthPixels).append(" ").append(Consts.DIAGRAM_WIDTH).append(" ").append(20).toString());
+        Consts.UI_X_FACTOR = ((double)Consts.DIAGRAM_WIDTH * Consts.SIZE_MULTIPLIER) / 3607.9999999998336D;
+        Consts.UI_Y_FACTOR = ((double)Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER) / 2988.9999999994643D;
+        Log.d("TEST", (new StringBuilder()).append("").append(Consts.SIZE_MULTIPLIER).append(" ").append(Consts.UI_X_FACTOR).append(" ").append(getResources().getDisplayMetrics().widthPixels).append(" ").append(getResources().getDisplayMetrics().heightPixels).toString());
+        SCREEN_DENSITY = getResources().getDisplayMetrics().density;
+        SCREEN_WIDTH = (int)Math.round((double)(Consts.DIAGRAM_WIDTH + 20) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY);
+        SCREEN_HEIGHT = (int)Math.round((double)(Consts.DIAGRAM_HEIGHT + 10) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY);
+        Log.d( "SCREEN PRE", ( new StringBuilder() ).append( Math.round( ( double ) ( Consts.DIAGRAM_WIDTH + 20 ) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY ) ).append( " " ).append( SCREEN_WIDTH ).append( " " ).append( Consts.DIAGRAM_WIDTH ).append( " " ).append( 20 ).append( " " ).append( Consts.SIZE_MULTIPLIER ).append( " " ).append( SCREEN_DENSITY ).append( " " ).toString() );
+        mFrameLayout.setLayoutParams( new FrameLayout.LayoutParams( ( int ) Math.round( ( double ) ( Consts.DIAGRAM_WIDTH + 20 ) * Consts.SIZE_MULTIPLIER * ( double ) scale * SCREEN_DENSITY ), ( int ) Math.round( ( double ) ( Consts.DIAGRAM_HEIGHT + 10 ) * Consts.SIZE_MULTIPLIER * ( double ) scale * SCREEN_DENSITY ) ) );
         mFrameLayout.invalidate();
         mFrameLayout.requestLayout();
-
         gestureDetector = new GestureDetector(getContext(), new GestureListener());
-
-        Button b1 = (Button)container.findViewById( R.id.button1 );
-        b2 = (Button)container.findViewById( R.id.button2 );
-        b1.setOnClickListener( this );
-        b2.setOnClickListener( this );
-
-        scaleDetector = new ScaleGestureDetector( getActivity(), this );
-
-        mPaint.setColor( Color.RED );
-        mPaint.setStrokeWidth( 20f );
+        scaleDetector = new ScaleGestureDetector(getActivity(), this);
+        mPaint.setColor( 0xffff0000 );
+        mPaint.setStrokeWidth( 20F );
         mPaint.setStrokeJoin( Paint.Join.ROUND);
-        GraphicDrawer.drawRandomDrawable( img, mFrameLayout, mPaint );
-        GraphicDrawer.drawBuildings(mFrameLayout);
+        demoMachine = new DemoMachine();
+        demoMachine.newRandomCoordinate();
+        demoMachine.getMachinePosition().updateUIPositionByDensity(getResources().getDisplayMetrics().density);
+        machineView = new ImageView(getContext());
+        machineView.setX( demoMachine.getMachinePosition().getUiX() );
+        machineView.setY( demoMachine.getMachinePosition().getUiY() );
+        machineView.setOnClickListener( this );
+        machineView.setImageDrawable( new Drawable() {
+            public void draw ( Canvas canvas ) {
+                Paint paint = new Paint();
+                paint.setColor( 0xffff0000 );
+                paint.setStyle( Paint.Style.FILL );
+                canvas.drawCircle( 50F, 50F, 50F, paint );
+            }
+
+            public int getOpacity () {
+                return 0;
+            }
+
+            public void setAlpha ( int i ) {
+            }
+
+            public void setColorFilter ( ColorFilter colorfilter ) {
+            }
+
+
+            {
+
+            }
+        } );
+        mFrameLayout.addView( machineView );
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl( "http://vtanase.com/Prototyping/" )
+                .addConverterFactory( GsonConverterFactory.create() )
+                .build();
+        ApiInterface api = retrofit.create( ApiInterface.class );
+        Call<MapModel> call = api.callVersion();
+        call.enqueue( new Callback<MapModel>() {
+            @Override
+            public void onResponse ( Call<MapModel> call, Response<MapModel> response ) {
+                mMapData = ( MapModel ) response.body();
+                mMapData.getMainCoordinates().adjustCoordinates( getResources().getDisplayMetrics().density );
+                mMapData.adjustCoordinates( getResources().getDisplayMetrics().density );
+                Log.d( "Response", response.message().toString() );
+                setDatabaseByResponse( true );
+            }
+
+            @Override
+            public void onFailure ( Call<MapModel> call, Throwable throwable ) {
+                Log.d( "Failure", throwable.getMessage() );
+                setDatabaseByResponse( false );
+            }
+        } );
         return view;
     }
 
-    @Override
-    public void onClick ( View v ) {
-        mPaint.setColor( Color.RED );
-        mPaint.setStrokeJoin( Paint.Join.ROUND );
-
-        GraphicDrawer.drawRandomDrawable( img, mFrameLayout, mPaint );
+    public void onPause()
+    {
+        super.onPause();
     }
 
-    @Override
-    public void onScaleEnd ( ScaleGestureDetector detector ) {
-        if ( ! checkBoundsX( detector.getFocusX() ) ) {
-            mainContainer.scrollTo( calcScrollToX( detector.getFocusX() ), mainContainer.getScrollY() );
+    public boolean onScale(ScaleGestureDetector scalegesturedetector)
+    {
+        float f;
+        boolean flag;
+        if (checkBoundsX(scalegesturedetector.getFocusX()) && checkBoundsY(scalegesturedetector.getFocusY()))
+        {
+            flag = true;
+        } else
+        {
+            flag = false;
         }
-        if ( ! checkBoundsY( detector.getFocusY() ) ) {
-            mainContainer.scrollTo( mainContainer.getScrollX(), calcScrollToY( detector.getFocusY() ) );
+        Log.d("SCALE ", String.valueOf(flag));
+        f = scaleDetector.getScaleFactor();
+        if (lastScaleFactor == 0.0F || Math.signum(f) == Math.signum(lastScaleFactor))
+        {
+            scale = scale * f;
+            scale = Math.max(1.0F, Math.min(scale, 3F));
+            Log.d("Pre Scale ", (new StringBuilder()).append(scale).append(" ").append(Math.round(SCREEN_WIDTH)).toString());
+            mFrameLayout.setScaleX(scale);
+            mFrameLayout.setScaleY(scale);
+            mFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(Math.round((float)SCREEN_WIDTH * scale), Math.round((float)SCREEN_HEIGHT * scale)));
+            Log.d("After Scale ", (new StringBuilder()).append(scale).append(" ").append(Math.round((float)SCREEN_WIDTH * scale)).toString());
+            mFrameLayout.invalidate();
+            mFrameLayout.requestLayout();
+            lastScaleFactor = f;
+            return true;
+        } else
+        {
+            lastScaleFactor = 0.0F;
+            return true;
         }
     }
 
-    @Override
-    public boolean onScaleBegin ( ScaleGestureDetector detector ) {
+    public boolean onScaleBegin(ScaleGestureDetector scalegesturedetector)
+    {
         return true;
     }
 
-    @Override
-    public boolean onScale ( ScaleGestureDetector detector ) {
+    public void onScaleEnd(ScaleGestureDetector scalegesturedetector)
+    {
+        Log.d("TAG", "SE");
+        lastScaleTimestamp = System.currentTimeMillis();
+    }
 
-        float scaleFactor = scaleDetector.getScaleFactor();
-        if (lastScaleFactor == 0 || (Math.signum(scaleFactor) == Math.signum(lastScaleFactor))) {
-            scale *= scaleFactor;
-            scale = Math.max(MIN_ZOOM, Math.min(scale, MAX_ZOOM));
-            lastScaleFactor = scaleFactor;
-        } else {
-            lastScaleFactor = 0;
+    public void scaleButtonClicked()
+    {
+        if (scale > 2.75F || scale < 1.25F)
+        {
+            scaleDirection = scaleDirection * -1;
         }
-        if ( ! checkBoundsX( detector.getFocusX() ) ) {
-            mainContainer.scrollTo( calcScrollToX( detector.getFocusX() ), mainContainer.getScrollY() );
-        }
-        if ( ! checkBoundsY( detector.getFocusY() ) ) {
-            mainContainer.scrollTo( mainContainer.getScrollX(), calcScrollToY( detector.getFocusY() ) );
-        }
-        mFrameLayout.setScaleX( scale );
-        mFrameLayout.setScaleY( scale );
-        mFrameLayout.setLayoutParams( new FrameLayout.LayoutParams( Math.round( SCREEN_WIDTH * scale ), Math.round( SCREEN_HEIGHT * scale ) ) );
-
-        b2.setX( SCREEN_WIDTH - b2.getWidth() );
-        b2.setY( SCREEN_HEIGHT - b2.getHeight() );
-
+        scale = scale + 0.25F * (float)scaleDirection;
+        mFrameLayout.setScaleX(scale);
+        mFrameLayout.setScaleY(scale);
+        mFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(Math.round((float)SCREEN_WIDTH * scale), Math.round((float)SCREEN_HEIGHT * scale)));
         mFrameLayout.invalidate();
         mFrameLayout.requestLayout();
-
-        Log.d("Scale ",detector.getFocusX()+" "+detector.getFocusY());
-
-        return true;
     }
 
-    private boolean checkBoundsX ( float curX ){
-        float xValue = mainContainer.getScrollX()+(mx - curX);
-        //container width
-        int w = SCREEN_WIDTH;
-        return ( Math.round( xValue ) > Math.round( ( w * ( scale - 1 ) / 2 * scale ) * ( - 1 ) ) ) && Math.round( xValue ) < Math.round( - w / 2 * scale * scale + 3 * w / 2 * scale - 3 * w / 5 );
+    public void setMachineView(ImageView imageview)
+    {
+        machineView = imageview;
     }
 
-    private boolean checkBoundsY (float curY){
-        float yValue = mainContainer.getScrollY()+(my - curY);
-        //height
-        int h = SCREEN_HEIGHT;
-        return Math.round( yValue ) > Math.round( ( h * ( scale - 1 ) / 2 * scale ) * ( - 1 ) ) && Math.round( yValue ) < Math.round( - h / 2 * scale * scale + 3 * h / 2 * scale - 3 * h / 5 );
+
+
+/*
+    static MapModel access$102(ScrollableImageFragment scrollableimagefragment, MapModel mapmodel)
+    {
+        scrollableimagefragment.mMapData = mapmodel;
+        return mapmodel;
     }
 
-    private int calcScrollToX ( float curX ) {
-        float xValue = mainContainer.getScrollX()+(mx - curX);
-        if(xValue<Math.round(( SCREEN_WIDTH * ( scale - 1 ) / 2 * scale ) * (-1)) ){
-            return Math.round(( SCREEN_WIDTH * ( scale - 1 ) / 2 * scale ) * (-1));
-        }
-        if(xValue>Math.round(  -SCREEN_WIDTH/2 *scale*scale + 3*SCREEN_WIDTH /2 *scale - 3*SCREEN_WIDTH/5)){
-            return Math.round( -SCREEN_WIDTH/2 *scale*scale + 3*SCREEN_WIDTH /2 *scale - 3*SCREEN_WIDTH/5);
-        }
-        return 0;
+*/
+
+
+
+/*
+    static boolean access$302(ScrollableImageFragment scrollableimagefragment, boolean flag)
+    {
+        scrollableimagefragment.animationIsRunning = flag;
+        return flag;
     }
 
-    private int calcScrollToY(float curY){
-        float yValue = mainContainer.getScrollY()+(my-curY);
-        if(Math.round(yValue)<Math.round( ( SCREEN_HEIGHT * ( scale - 1 ) / 2 * scale ) * ( - 1 ) )){
-            return Math.round(( SCREEN_HEIGHT * ( scale - 1 ) / 2 * scale ) * (-1));
-        }
-        if(Math.round(yValue)>Math.round( -SCREEN_HEIGHT /2 *scale*scale + 3*SCREEN_HEIGHT /2 *scale - 3*SCREEN_HEIGHT/5 )){
-            return Math.round( -SCREEN_HEIGHT /2 *scale*scale + 3*SCREEN_HEIGHT /2 *scale - 3*SCREEN_HEIGHT/5 );
-        }
-        return 0;
-    }
+*/
 
-    public void handleTouchEvent(MotionEvent event){
-        float curX, curY;
-
-            switch ( event.getAction() ) {
-                case MotionEvent.ACTION_DOWN:
-                    //if(event.getPointerCount()<2) {
-                        mx = event.getX();
-                        my = event.getY();
-                   // }
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    if(event.getPointerCount()<2) {
-                        curX = event.getX();
-                        curY = event.getY();
-                        if ( checkBoundsX( curX ) ) {
-                            mainContainer.scrollBy( ( int ) ( mx - curX ), 0 );
-                        }
-                        if ( checkBoundsY( curY ) ) {
-                            mainContainer.scrollBy( 0, ( int ) ( my - curY ) );
-                        }
-
-                        mx = curX;
-                        my = curY;
-                    }
-                    break;
-                case MotionEvent.ACTION_UP:
-                    curX = event.getX();
-                    curY = event.getY();
-
-                    if ( ! checkBoundsX( curX ) ) {
-                        mainContainer.scrollTo( calcScrollToX( curX ), mainContainer.getScrollY() );
-                    }
-                    if ( ! checkBoundsY( curY ) ) {
-                        mainContainer.scrollTo( mainContainer.getScrollX(), calcScrollToY( curY ) );
-                    }
-
-                    break;
-
-        }
-    }
-
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-            return true;
-        }
-
-        // event when double tap occurs
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-            return true;
-        }
-    }
 
 }

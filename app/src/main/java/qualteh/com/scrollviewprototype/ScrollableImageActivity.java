@@ -1,60 +1,77 @@
-package qualteh.com.scrollviewprototype;
+// Decompiled by Jad v1.5.8e. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.geocities.com/kpdus/jad.html
+// Decompiler options: braces fieldsfirst space lnc 
 
-/**
- * Created by Virgil Tanase on 10.03.2016.
- */
+package qualteh.com.scrollviewprototype;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
+import android.view.View;
 
-public class ScrollableImageActivity extends SingleFragmentActivity {
+// Referenced classes of package qualteh.com.scrollviewprototype:
+//            SingleFragmentActivity, ScrollableImageFragment
 
-    private ScrollableImageFragment mFragment;
+public class ScrollableImageActivity extends SingleFragmentActivity
+{
 
     private static Context mContext;
+    private ScrollableImageFragment mFragment;
 
-
-
-    @Override
-    protected void onCreate ( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        ScrollableImageActivity.mContext=getApplicationContext();
-        if(getSupportActionBar()!=null)
-            getSupportActionBar().hide();
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById( R.id.contentContainer );
-        Log.d( "Fragment ", String.valueOf( fragment ) );
-        if(fragment==null){
-            fragment = createFragment();
-            fm.beginTransaction()
-                    .add( R.id.contentContainer,fragment )
-                    .commit();
-        }
-        else{
-            mFragment= ( ScrollableImageFragment ) fragment;
-        }
+    public ScrollableImageActivity()
+    {
     }
 
-    @Override
-    protected Fragment createFragment () {
-        mFragment= ScrollableImageFragment.newInstance();
+    public static Context getActivityContext()
+    {
+        return mContext;
+    }
+
+    protected Fragment createFragment()
+    {
+        mFragment = ScrollableImageFragment.newInstance();
         return mFragment;
     }
 
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent event) {
-        super.dispatchTouchEvent( event );
-        mFragment.scaleDetector.onTouchEvent( event );
-        mFragment.gestureDetector.onTouchEvent( event );
-        mFragment.handleTouchEvent( event );
-        return mFragment.gestureDetector.onTouchEvent( event );
+    public boolean dispatchTouchEvent(MotionEvent motionevent)
+    {
+        super.dispatchTouchEvent(motionevent);
+        mFragment.scaleDetector.onTouchEvent(motionevent);
+        mFragment.gestureDetector.onTouchEvent(motionevent);
+        mFragment.handleTouchEvent(motionevent);
+        return mFragment.gestureDetector.onTouchEvent(motionevent);
     }
 
-    public static Context getActivityContext() {
-        return ScrollableImageActivity.mContext;
+    protected void onCreate(Bundle bundle)
+    {
+        super.onCreate(bundle);
+        mContext = getApplicationContext();
+        if (getSupportActionBar() != null)
+        {
+            getSupportActionBar().hide();
+        }
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById( R.id.contentContainer );
+        if (fragment == null)
+        {
+            fragment = createFragment();
+            fm.beginTransaction().add(R.id.contentContainer, fragment).commit();
+            return;
+        } else
+        {
+            mFragment = (ScrollableImageFragment)fragment;
+            return;
+        }
+    }
+
+    public void onDemoButtonClick(View view)
+    {
+        mFragment.scaleButtonClicked();
     }
 }

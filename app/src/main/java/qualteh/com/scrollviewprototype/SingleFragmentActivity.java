@@ -1,25 +1,30 @@
+// Decompiled by Jad v1.5.8e. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.geocities.com/kpdus/jad.html
+// Decompiler options: braces fieldsfirst space lnc 
+
 package qualteh.com.scrollviewprototype;
 
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
-/**
- * Created by Virgil Tanase on 14.03.2016.
- */
-public abstract class SingleFragmentActivity extends AppCompatActivity{
+public abstract class SingleFragmentActivity extends AppCompatActivity
+{
+
+    public SingleFragmentActivity()
+    {
+    }
 
     protected abstract Fragment createFragment();
 
-    @LayoutRes
-    protected int getLayoutResId(){
-        return R.layout.activity_main;
+    protected int getLayoutResId()
+    {
+        return 0x7f040019;
     }
 
-    protected void onCreate ( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        setContentView( getLayoutResId() );
+    protected void onCreate(Bundle bundle)
+    {
+        super.onCreate(bundle);
+        setContentView(getLayoutResId());
     }
-
 }
