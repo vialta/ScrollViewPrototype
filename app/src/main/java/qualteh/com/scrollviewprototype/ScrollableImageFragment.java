@@ -4,9 +4,7 @@
 
 package qualteh.com.scrollviewprototype;
 
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Canvas;
 import android.graphics.ColorFilter;
@@ -14,8 +12,6 @@ import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -29,18 +25,17 @@ import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.OverScroller;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import java.util.List;
+import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 import qualteh.com.scrollviewprototype.API.ApiInterface;
 import qualteh.com.scrollviewprototype.Data.DbHelper;
 import qualteh.com.scrollviewprototype.Model.Building;
-import qualteh.com.scrollviewprototype.Model.MainCoordinates;
 import qualteh.com.scrollviewprototype.Model.MapModel;
-import qualteh.com.scrollviewprototype.Model.Position;
 import qualteh.com.scrollviewprototype.Model.Storage;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -75,6 +70,8 @@ public class ScrollableImageFragment extends Fragment
     }
 
 
+    private OverScroller scroller;
+
     private static final float MAX_ZOOM = 3F;
     private static final float MIN_ZOOM = 1F;
     private static double SCREEN_DENSITY;
@@ -85,7 +82,7 @@ public class ScrollableImageFragment extends Fragment
     private DemoMachine demoMachine;
     @Bind( R.id.errorText )TextView firstTimeTextError;
     public GestureDetector gestureDetector;
-    @Bind( R.id.vectorTest )ImageView img;
+    @Bind( R.id.vectorTest )ImageView contentPainter;
     private float lastScaleFactor;
     private long lastScaleTimestamp;
     private long leftLimit;
@@ -110,6 +107,107 @@ public class ScrollableImageFragment extends Fragment
         lastScaleFactor = 0.0F;
         animationIsRunning = false;
         lastScaleTimestamp = System.currentTimeMillis();
+    }
+
+    public void onClick(View view)
+    {
+        demoButtonClicked();
+    }
+
+    public void onCreate(Bundle bundle)
+    {
+        super.onCreate(bundle);
+    }
+
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewgroup, Bundle bundle)
+    {
+        View view = layoutInflater.inflate(R.layout.activity_main, viewgroup, false);
+        ButterKnife.bind(this, view);
+
+        scroller = new OverScroller( getContext() );
+
+        Consts.SIZE_MULTIPLIER = ((double)getResources().getDisplayMetrics().widthPixels * 1.0D) / (double)((float)Consts.DIAGRAM_WIDTH * getResources().getDisplayMetrics().density + 20F * getResources().getDisplayMetrics().density);
+        Log.d("TEST", (new StringBuilder()).append("").append(Consts.SIZE_MULTIPLIER).append(" ").append(" ").append(getResources().getDisplayMetrics().widthPixels).append(" ").append(Consts.DIAGRAM_WIDTH).append(" ").append(20).toString());
+        Consts.UI_X_FACTOR = ((double)Consts.DIAGRAM_WIDTH * Consts.SIZE_MULTIPLIER) / 3607.9999999998336D;
+        Consts.UI_Y_FACTOR = ((double)Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER) / 2988.9999999994643D;
+        Log.d("TEST", (new StringBuilder()).append("").append(Consts.SIZE_MULTIPLIER).append(" ").append(Consts.UI_X_FACTOR).append(" ").append(getResources().getDisplayMetrics().widthPixels).append(" ").append(getResources().getDisplayMetrics().heightPixels).toString());
+        SCREEN_DENSITY = getResources().getDisplayMetrics().density;
+        SCREEN_WIDTH = (int)Math.round((double)(Consts.DIAGRAM_WIDTH + 20) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY);
+        SCREEN_HEIGHT = (int)Math.round((double)(Consts.DIAGRAM_HEIGHT + 10) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY);
+        Log.d( "SCREEN PRE", ( new StringBuilder() ).append( Math.round( ( double ) ( Consts.DIAGRAM_WIDTH + 20 ) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY ) ).append( " " ).append( SCREEN_WIDTH ).append( " " ).append( Consts.DIAGRAM_WIDTH ).append( " " ).append( 20 ).append( " " ).append( Consts.SIZE_MULTIPLIER ).append( " " ).append( SCREEN_DENSITY ).append( " " ).toString() );
+        contentPainter.setLayoutParams( new FrameLayout.LayoutParams( ( int ) Math.round( ( double ) ( Consts.DIAGRAM_WIDTH + 20 ) * Consts.SIZE_MULTIPLIER * ( double ) scale * SCREEN_DENSITY ), ( int ) Math.round( ( double ) ( Consts.DIAGRAM_HEIGHT + 10 ) * Consts.SIZE_MULTIPLIER * ( double ) scale * SCREEN_DENSITY ) ) );
+        contentPainter.invalidate();
+        contentPainter.requestLayout();
+        gestureDetector = new GestureDetector(getContext(), new GestureListener());
+        scaleDetector = new ScaleGestureDetector(getActivity(), this);
+        mPaint.setColor( 0xffff0000 );
+        mPaint.setStrokeWidth( 20F );
+        mPaint.setStrokeJoin( Paint.Join.ROUND);
+        demoMachine = new DemoMachine();
+        demoMachine.newRandomCoordinate();
+        demoMachine.getMachinePosition().updateUIPositionByDensity(getResources().getDisplayMetrics().density);
+        machineView = new ImageView(getContext());
+        machineView.setX( demoMachine.getMachinePosition().getUiX() );
+        machineView.setY( demoMachine.getMachinePosition().getUiY() );
+        machineView.setOnClickListener( this );
+        machineView.setImageDrawable( new Drawable() {
+            public void draw ( Canvas canvas ) {
+                Paint paint = new Paint();
+                paint.setColor( 0xffff0000 );
+                paint.setStyle( Paint.Style.FILL );
+                canvas.drawCircle( 50F, 50F, 50F, paint );
+            }
+
+            public int getOpacity () {
+                return 0;
+            }
+
+            public void setAlpha ( int i ) {
+            }
+
+            public void setColorFilter ( ColorFilter colorfilter ) {
+            }
+
+
+            {
+
+            }
+        } );
+        mFrameLayout.addView( machineView );
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl( "http://vtanase.com/Prototyping/" )
+                .addConverterFactory( GsonConverterFactory.create() )
+                .build();
+        ApiInterface api = retrofit.create( ApiInterface.class );
+        Call<MapModel> call = api.callVersion();
+        call.enqueue( new Callback<MapModel>() {
+            @Override
+            public void onResponse ( Call<MapModel> call, Response<MapModel> response ) {
+                mMapData = ( MapModel ) response.body();
+                mMapData.getMainCoordinates().adjustCoordinates( getResources().getDisplayMetrics().density );
+                mMapData.adjustCoordinates( getResources().getDisplayMetrics().density );
+                Log.d( "Response", response.message().toString() );
+                setDatabaseByResponse( true );
+            }
+
+            @Override
+            public void onFailure ( Call<MapModel> call, Throwable throwable ) {
+                Log.d( "Failure", throwable.getMessage() );
+                setDatabaseByResponse( false );
+            }
+        } );
+        vScroll = ( ScrollView ) view.findViewById( R.id.vScroll );
+        hScroll = (HorizontalScrollView ) view.findViewById( R.id.hScroll );
+
+        OverScrollDecoratorHelper.setUpOverScroll(vScroll);
+        OverScrollDecoratorHelper.setUpOverScroll(hScroll);
+
+        return view;
+    }
+
+    public void onPause()
+    {
+        super.onPause();
     }
 
     private int calcScrollToX(float f)
@@ -149,7 +247,7 @@ public class ScrollableImageFragment extends Fragment
     private boolean checkBoundsX(float f)
     {
         f = (float)mainContainer.getScrollX() + (mx - f);
-        leftLimit = Math.round(((scale * (float)(SCREEN_WIDTH / 4)) / 2.0F) * ((scale - 1.0F) * 4F) * -1F);
+        leftLimit = Math.round( ( ( scale * ( float ) ( SCREEN_WIDTH / 4 ) ) / 2.0F ) * ( ( scale - 1.0F ) * 4F ) * - 1F );
         rightLimit = Math.round(((float)leftLimit + (float)SCREEN_WIDTH * scale) - (float)getResources().getDisplayMetrics().widthPixels);
         return (long)Math.round(f) > leftLimit && (long)Math.round(f) < rightLimit;
     }
@@ -206,7 +304,7 @@ public class ScrollableImageFragment extends Fragment
             sharedpreferences.edit().putBoolean("PREFS_FIRST_TIME", false).apply();
         }
         mMapData = dbhelper.getMapModel(sqlitedatabase);
-        GraphicDrawer.drawMap(img, mFrameLayout, mPaint, mMapData, demoMachine, SCREEN_DENSITY);
+        GraphicDrawer.drawMap( contentPainter, mFrameLayout, mPaint, mMapData, demoMachine, SCREEN_DENSITY );
     }
 
     public void demoButtonClicked()
@@ -265,10 +363,12 @@ public class ScrollableImageFragment extends Fragment
                 my = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
+
                 curX = event.getX();
                 curY = event.getY();
-                vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
-                hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+
+                vScroll.smoothScrollBy( ( int ) ( mx - curX ), ( int ) ( my - curY ) );
+                hScroll.smoothScrollBy((int) (mx - curX), (int) (my - curY));
                 mx = curX;
                 my = curY;
                 break;
@@ -350,7 +450,7 @@ public class ScrollableImageFragment extends Fragment
             s = (new StringBuilder()).append(s).append("/").toString();
         }
 
-        Log.d("WTF", s);
+        Log.d( "WTF", s );
     }
 
     void logMainCoords()
@@ -393,102 +493,10 @@ public class ScrollableImageFragment extends Fragment
             s = (new StringBuilder()).append(s).append("/").toString();
         }
 
-        Log.d("WTF", s);
+        Log.d( "WTF", s );
     }
 
-    public void onClick(View view)
-    {
-        demoButtonClicked();
-    }
 
-    public void onCreate(Bundle bundle)
-    {
-        super.onCreate(bundle);
-    }
-
-    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewgroup, Bundle bundle)
-    {
-        View view = layoutInflater.inflate(R.layout.activity_main, viewgroup, false);
-        ButterKnife.bind(this, view);
-        Consts.SIZE_MULTIPLIER = ((double)getResources().getDisplayMetrics().widthPixels * 1.0D) / (double)((float)Consts.DIAGRAM_WIDTH * getResources().getDisplayMetrics().density + 20F * getResources().getDisplayMetrics().density);
-        Log.d("TEST", (new StringBuilder()).append("").append(Consts.SIZE_MULTIPLIER).append(" ").append(" ").append(getResources().getDisplayMetrics().widthPixels).append(" ").append(Consts.DIAGRAM_WIDTH).append(" ").append(20).toString());
-        Consts.UI_X_FACTOR = ((double)Consts.DIAGRAM_WIDTH * Consts.SIZE_MULTIPLIER) / 3607.9999999998336D;
-        Consts.UI_Y_FACTOR = ((double)Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER) / 2988.9999999994643D;
-        Log.d("TEST", (new StringBuilder()).append("").append(Consts.SIZE_MULTIPLIER).append(" ").append(Consts.UI_X_FACTOR).append(" ").append(getResources().getDisplayMetrics().widthPixels).append(" ").append(getResources().getDisplayMetrics().heightPixels).toString());
-        SCREEN_DENSITY = getResources().getDisplayMetrics().density;
-        SCREEN_WIDTH = (int)Math.round((double)(Consts.DIAGRAM_WIDTH + 20) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY);
-        SCREEN_HEIGHT = (int)Math.round((double)(Consts.DIAGRAM_HEIGHT + 10) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY);
-        Log.d( "SCREEN PRE", ( new StringBuilder() ).append( Math.round( ( double ) ( Consts.DIAGRAM_WIDTH + 20 ) * Consts.SIZE_MULTIPLIER * SCREEN_DENSITY ) ).append( " " ).append( SCREEN_WIDTH ).append( " " ).append( Consts.DIAGRAM_WIDTH ).append( " " ).append( 20 ).append( " " ).append( Consts.SIZE_MULTIPLIER ).append( " " ).append( SCREEN_DENSITY ).append( " " ).toString() );
-        mFrameLayout.setLayoutParams( new FrameLayout.LayoutParams( ( int ) Math.round( ( double ) ( Consts.DIAGRAM_WIDTH + 20 ) * Consts.SIZE_MULTIPLIER * ( double ) scale * SCREEN_DENSITY ), ( int ) Math.round( ( double ) ( Consts.DIAGRAM_HEIGHT + 10 ) * Consts.SIZE_MULTIPLIER * ( double ) scale * SCREEN_DENSITY ) ) );
-        mFrameLayout.invalidate();
-        mFrameLayout.requestLayout();
-        gestureDetector = new GestureDetector(getContext(), new GestureListener());
-        scaleDetector = new ScaleGestureDetector(getActivity(), this);
-        mPaint.setColor( 0xffff0000 );
-        mPaint.setStrokeWidth( 20F );
-        mPaint.setStrokeJoin( Paint.Join.ROUND);
-        demoMachine = new DemoMachine();
-        demoMachine.newRandomCoordinate();
-        demoMachine.getMachinePosition().updateUIPositionByDensity(getResources().getDisplayMetrics().density);
-        machineView = new ImageView(getContext());
-        machineView.setX( demoMachine.getMachinePosition().getUiX() );
-        machineView.setY( demoMachine.getMachinePosition().getUiY() );
-        machineView.setOnClickListener( this );
-        machineView.setImageDrawable( new Drawable() {
-            public void draw ( Canvas canvas ) {
-                Paint paint = new Paint();
-                paint.setColor( 0xffff0000 );
-                paint.setStyle( Paint.Style.FILL );
-                canvas.drawCircle( 50F, 50F, 50F, paint );
-            }
-
-            public int getOpacity () {
-                return 0;
-            }
-
-            public void setAlpha ( int i ) {
-            }
-
-            public void setColorFilter ( ColorFilter colorfilter ) {
-            }
-
-
-            {
-
-            }
-        } );
-        mFrameLayout.addView( machineView );
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl( "http://vtanase.com/Prototyping/" )
-                .addConverterFactory( GsonConverterFactory.create() )
-                .build();
-        ApiInterface api = retrofit.create( ApiInterface.class );
-        Call<MapModel> call = api.callVersion();
-        call.enqueue( new Callback<MapModel>() {
-            @Override
-            public void onResponse ( Call<MapModel> call, Response<MapModel> response ) {
-                mMapData = ( MapModel ) response.body();
-                mMapData.getMainCoordinates().adjustCoordinates( getResources().getDisplayMetrics().density );
-                mMapData.adjustCoordinates( getResources().getDisplayMetrics().density );
-                Log.d( "Response", response.message().toString() );
-                setDatabaseByResponse( true );
-            }
-
-            @Override
-            public void onFailure ( Call<MapModel> call, Throwable throwable ) {
-                Log.d( "Failure", throwable.getMessage() );
-                setDatabaseByResponse( false );
-            }
-        } );
-        vScroll = ( ScrollView ) view.findViewById( R.id.vScroll );
-        hScroll = (HorizontalScrollView ) view.findViewById(R.id.hScroll);
-        return view;
-    }
-
-    public void onPause()
-    {
-        super.onPause();
-    }
 
     public boolean onScale(ScaleGestureDetector scalegesturedetector)
     {
@@ -508,6 +516,7 @@ public class ScrollableImageFragment extends Fragment
             scale = scale * f;
             scale = Math.max(1.0F, Math.min(scale, 3F));
             Log.d("Pre Scale ", (new StringBuilder()).append(scale).append(" ").append(Math.round(SCREEN_WIDTH)).toString());
+
             mFrameLayout.setScaleX(scale);
             mFrameLayout.setScaleY(scale);
             mFrameLayout.setLayoutParams(new FrameLayout.LayoutParams(Math.round((float)SCREEN_WIDTH * scale), Math.round((float)SCREEN_HEIGHT * scale)));

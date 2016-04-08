@@ -15,8 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-        </qualteh.com.scrollviewprototype.HScroll>
-    </qualteh.com.scrollviewprototype.VScroll>
+
 
 
 
@@ -37,8 +36,8 @@
                 <ImageView
                     android:id="@+id/vectorTest"
                     android:scaleType="center"
-                    android:layout_width="1600dp"
-                    android:layout_height="900dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_gravity="start"
                     android:src="@drawable/vector_drawable_test"/>
 
@@ -48,12 +47,10 @@
                     android:text="New Button"
                     android:id="@+id/button1"
                     android:layout_gravity="start"/>
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New Button2"
-                    android:id="@+id/button2"
-                    android:layout_gravity="bottom|right"/>
+
 
             </FrameLayout>
+
+        </qualteh.com.scrollviewprototype.HScroll>
+    </qualteh.com.scrollviewprototype.VScroll>
     </FrameLayout>
