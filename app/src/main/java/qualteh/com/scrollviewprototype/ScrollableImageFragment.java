@@ -27,7 +27,9 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -52,6 +54,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ScrollableImageFragment extends Fragment
     implements View.OnClickListener, ScaleGestureDetector.OnScaleGestureListener
 {
+    private ScrollView vScroll;
+    private HorizontalScrollView hScroll;
+
     private class GestureListener extends GestureDetector.SimpleOnGestureListener
     {
 
@@ -249,54 +254,79 @@ public class ScrollableImageFragment extends Fragment
         return machineView;
     }
 
-    public void handleTouchEvent(MotionEvent motionEvent)
+    public void handleTouchEvent(MotionEvent event)
     {
-        switch ( motionEvent.getAction() ){
+        float curX, curY;
+
+        switch (event.getAction()) {
+
             case MotionEvent.ACTION_DOWN:
-                mx = motionEvent.getX();
-                my = motionEvent.getY();
+                mx = event.getX();
+                my = event.getY();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (motionEvent.getPointerCount() < 2 && System.currentTimeMillis() - lastScaleTimestamp > 500L)
-                {
-                    float curX = motionEvent.getX();
-                    float curY = motionEvent.getY();
-                    if (checkBoundsX(curX))
-                    {
-                        mainContainer.scrollBy((int)(mx - curX), 0);
-                    }
-                    if (checkBoundsY(curY))
-                    {
-                        mainContainer.scrollBy(0, (int)(my - curY));
-                    }
-                    mx = curX;
-                    my = curY;
-                }
+                curX = event.getX();
+                curY = event.getY();
+                vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                mx = curX;
+                my = curY;
                 break;
-            case MotionEvent.ACTION_POINTER_UP:
-                lastScaleTimestamp = System.currentTimeMillis();
-                return;
             case MotionEvent.ACTION_UP:
-                float curX = motionEvent.getX();
-                float curY = motionEvent.getY();
-                Log.d("TAG", (new StringBuilder()).append("UP ").append((float)mainContainer.getScrollY() + (my - curY)).append(" ").append(leftLimit).append(" ").append(checkBoundsX(curX)).append(" ").append(checkBoundsY(curY)).toString());
-                int i = mainContainer.getScrollX();
-                int j = mainContainer.getScrollY();
-                if (!checkBoundsX(curX))
-                {
-                    Log.d("TAG", "Scroll X UP");
-                    i = calcScrollToX(curX);
-                }
-                if (!checkBoundsY(curY))
-                {
-                    Log.d("TAG", "Scroll Y UP");
-                    j = calcScrollToY(curY);
-                }
-                mainContainer.scrollTo(i, j);
-                break;
-            default:
+                curX = event.getX();
+                curY = event.getY();
+                vScroll.scrollBy((int) (mx - curX), (int) (my - curY));
+                hScroll.scrollBy((int) (mx - curX), (int) (my - curY));
                 break;
         }
+
+
+//        switch ( motionEvent.getAction() ){
+//            case MotionEvent.ACTION_DOWN:
+//                mx = motionEvent.getX();
+//                my = motionEvent.getY();
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                if (motionEvent.getPointerCount() < 2 && System.currentTimeMillis() - lastScaleTimestamp > 500L)
+//                {
+//                    float curX = motionEvent.getX();
+//                    float curY = motionEvent.getY();
+//                    if (checkBoundsX(curX))
+//                    {
+//                        mainContainer.scrollBy((int)(mx - curX), 0);
+//                    }
+//                    if (checkBoundsY(curY))
+//                    {
+//                        mainContainer.scrollBy(0, (int)(my - curY));
+//                    }
+//                    mx = curX;
+//                    my = curY;
+//                }
+//                break;
+//            case MotionEvent.ACTION_POINTER_UP:
+//                lastScaleTimestamp = System.currentTimeMillis();
+//                return;
+//            case MotionEvent.ACTION_UP:
+//                float curX = motionEvent.getX();
+//                float curY = motionEvent.getY();
+//                Log.d("TAG", (new StringBuilder()).append("UP ").append((float)mainContainer.getScrollY() + (my - curY)).append(" ").append(leftLimit).append(" ").append(checkBoundsX(curX)).append(" ").append(checkBoundsY(curY)).toString());
+//                int i = mainContainer.getScrollX();
+//                int j = mainContainer.getScrollY();
+//                if (!checkBoundsX(curX))
+//                {
+//                    Log.d("TAG", "Scroll X UP");
+//                    i = calcScrollToX(curX);
+//                }
+//                if (!checkBoundsY(curY))
+//                {
+//                    Log.d("TAG", "Scroll Y UP");
+//                    j = calcScrollToY(curY);
+//                }
+//                mainContainer.scrollTo(i, j);
+//                break;
+//            default:
+//                break;
+//        }
     }
 
     void logBuildingCoords()
@@ -450,6 +480,8 @@ public class ScrollableImageFragment extends Fragment
                 setDatabaseByResponse( false );
             }
         } );
+        vScroll = ( ScrollView ) view.findViewById( R.id.vScroll );
+        hScroll = (HorizontalScrollView ) view.findViewById(R.id.hScroll);
         return view;
     }
 

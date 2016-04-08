@@ -33,12 +33,12 @@ public class DbHelper extends SQLiteOpenHelper
         for (int j = 0; j < list.size(); j++)
         {
             String query = ( new StringBuilder() ).append( "INSERT INTO building_table(_map_id, _name, _building_stroke_width, _building_stroke_color) VALUES (" ).append( i ).append( ", '" ).append( ( ( Building ) list.get( j ) ).getName() ).append( "', " ).append( ( ( Building ) list.get( j ) ).getStrokeWidth() ).append( ", '" ).append( ( ( Building ) list.get( j ) ).getStrokeColor() ).append( "' )" ).toString();
-           // Log.d("Debug",query);
+
             sqlitedatabase.execSQL( query );
             for (int k = 0; k < ((Building)list.get(j)).getCoordinates().size(); k += 2)
             {
                 query = (new StringBuilder()).append("INSERT INTO building_coordinates_table(_x, _y, _building_id) VALUES (").append(((Building)list.get(j)).getCoordinates().get(k)).append(", ").append(((Building)list.get(j)).getCoordinates().get(k + 1)).append(", ").append(j).append(")").toString();
-             //   Log.d("Debug",query);
+
                 sqlitedatabase.execSQL(query);
             }
 
@@ -51,7 +51,7 @@ public class DbHelper extends SQLiteOpenHelper
         for (int j = 0; j < maincoordinates.getCoordinates().size(); j += 2)
         {
             String query = (new StringBuilder()).append("INSERT INTO map_model_coordinates_table(_x, _y, _map_id ) VALUES (").append(maincoordinates.getCoordinates().get(j)).append(", ").append(maincoordinates.getCoordinates().get(j + 1)).append(", ").append(i).append(" )").toString();
-           // Log.d("Debug",query);
+
             sqlitedatabase.execSQL(query);
         }
 
@@ -60,7 +60,7 @@ public class DbHelper extends SQLiteOpenHelper
     public void addMapModel(SQLiteDatabase sqlitedatabase, MapModel mapmodel)
     {
         String query = (new StringBuilder()).append("INSERT INTO map_model_table(_map_id, _name, _version, _map_stroke_width, _map_stroke_color) VALUES (").append(mapmodel.getId()).append(", '").append(mapmodel.getName()).append("', ").append(mapmodel.getVersion()).append(", ").append(mapmodel.getMainCoordinates().getStrokeWidth()).append(", '").append(mapmodel.getMainCoordinates().getStrokeColor()).append("' ").append(")").toString();
-       // Log.d("Debug",query);
+
         sqlitedatabase.execSQL(query);
         addMainCoordinates(sqlitedatabase, mapmodel.getMainCoordinates(), mapmodel.getId());
         addBuildings(sqlitedatabase, mapmodel.getBuildings(), mapmodel.getId());
@@ -72,12 +72,12 @@ public class DbHelper extends SQLiteOpenHelper
         for (int j = 0; j < list.size(); j++)
         {
             String query = (new StringBuilder().append("INSERT INTO storage_table(_storage_map_id, _storage_id, _storage_stroke_width, _storage_stroke_color) VALUES (").append(i).append(", '").append(((Storage)list.get(j)).getId()).append("', ").append(((Storage)list.get(j)).getStrokeWidth()).append(", '").append(((Storage)list.get(j)).getStrokeColor()).append("' )").toString());
-           // Log.d("Debug",query);
+
             sqlitedatabase.execSQL(query);
             for (int k = 0; k < ((Storage)list.get(j)).getCoordinates().size(); k += 2)
             {
                 query =(new StringBuilder()).append("INSERT INTO storage_table_coordinates(_x, _y, _storage_id) VALUES (").append(((Storage)list.get(j)).getCoordinates().get(k)).append(", ").append(((Storage)list.get(j)).getCoordinates().get(k + 1)).append(", '").append(((Storage)list.get(j)).getId()).append("')").toString();
-             //   Log.d("Debug",query);
+
                 sqlitedatabase.execSQL(query);
             }
 
@@ -114,7 +114,7 @@ public class DbHelper extends SQLiteOpenHelper
     {
         ArrayList arraylist = new ArrayList();
         String query = (new StringBuilder()).append("SELECT * FROM building_coordinates_table WHERE _building_id = ").append(i).toString();
-       // Log.d("Debug",query);
+
         Cursor cursor = sqlitedatabase.rawQuery(query, null);
         boolean isRecord;
         isRecord = cursor.moveToFirst();
@@ -132,7 +132,6 @@ public class DbHelper extends SQLiteOpenHelper
 
     public List<Building> getBuildings(SQLiteDatabase sqlitedatabase)
     {
-        Log.d("Fuck 2",sqlitedatabase.isOpen()+"");
         ArrayList arraylist = new ArrayList();
         Cursor cursor = sqlitedatabase.rawQuery("SELECT * FROM building_table", null);
         boolean flag = cursor.moveToFirst();
@@ -154,7 +153,7 @@ public class DbHelper extends SQLiteOpenHelper
             ((Building)arraylist.get(j)).setCoordinates(getBuildingCoordinates(sqlitedatabase, j));
         }
         cursor.close();
-        Log.d( "Fuck", sqlitedatabase + "" );
+
         return arraylist;
     }
 
@@ -180,7 +179,7 @@ public class DbHelper extends SQLiteOpenHelper
 
     public MapModel getMapModel(SQLiteDatabase sqlitedatabase)
     {
-        Log.d("TAG", "Loading Map Data");
+
         MapModel mapmodel = new MapModel();
         MainCoordinates maincoordinates = new MainCoordinates();
         Cursor cursor = sqlitedatabase.rawQuery("SELECT * FROM map_model_table", null);
@@ -200,11 +199,11 @@ public class DbHelper extends SQLiteOpenHelper
             flag = cursor.moveToNext();
         }
 
-        Log.d( "Fuck Start", sqlitedatabase.isOpen() + "" );
+
         maincoordinates.setCoordinates( getMainCoordinates( sqlitedatabase, mapmodel.getId() ).getCoordinates() );
-        Log.d( "Fuck 0", sqlitedatabase.isOpen() + "" );
+
         mapmodel.setMainCoordinates( maincoordinates );
-        Log.d( "Fuck 1", sqlitedatabase.isOpen() + "" );
+
         mapmodel.setBuildings( getBuildings( sqlitedatabase ) );
         mapmodel.setStorage( getStorages( sqlitedatabase ) );
         cursor.close();
@@ -260,7 +259,7 @@ public class DbHelper extends SQLiteOpenHelper
         boolean value = false;
         Cursor cursor = sqlitedatabase.rawQuery("SELECT * FROM map_model_table LIMIT 1", null);
         cursor.moveToFirst();
-        Log.d("Cool","cool");
+
         if (cursor.getInt(cursor.getColumnIndex("_version")) == integer.intValue())
         {
             value=true;
