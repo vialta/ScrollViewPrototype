@@ -15,9 +15,6 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
-// Referenced classes of package qualteh.com.scrollviewprototype:
-//            SingleFragmentActivity, ScrollableImageFragment
-
 public class ScrollableImageActivity extends SingleFragmentActivity
 {
 
@@ -72,6 +69,6 @@ public class ScrollableImageActivity extends SingleFragmentActivity
 
     public void onDemoButtonClick(View view)
     {
-        mFragment.scaleButtonClicked();
+        mFragment.demoButtonClicked();
     }
 }
