@@ -155,8 +155,8 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     private boolean checkBoundsX(int currentScroll) {
         leftLimit = Math.round(((scale * (float)(SCREEN_WIDTH / 8))) * ((scale - 1.0F) * 4F) * -1F);
         rightLimit = Math.round(((float)leftLimit + (float)SCREEN_WIDTH * scale) - (float)getResources().getDisplayMetrics().widthPixels);
-
-        return (long)Math.round(currentScroll) > leftLimit && (long)Math.round(currentScroll) < rightLimit;
+        Log.d("Czech zoom X", currentScroll+" "+leftLimit+" "+rightLimit+" "+String.valueOf( ((long)Math.round(currentScroll) >= leftLimit && (long)Math.round(currentScroll) <= rightLimit) ) );
+        return (long)Math.round(currentScroll) >= leftLimit && (long)Math.round(currentScroll) <= rightLimit;
     }
 
     private boolean checkBoundsX(float touchPosition) {
@@ -170,16 +170,20 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     private boolean checkBoundsY(int currentScroll) {
         topLimit = Math.round(scale * (float)(SCREEN_HEIGHT / 8) * ((scale - 1.0F) * 4F) * -1F);
         bottomLimit = Math.round(((float)topLimit + (float)SCREEN_HEIGHT * scale) - (float)getResources().getDisplayMetrics().heightPixels);
-        Log.d( "Height", currentScroll + " " + topLimit + " " + bottomLimit);
-        return (long)Math.round(currentScroll) > topLimit && (long)Math.round(currentScroll) < bottomLimit;
+        Log.d("Czech zoom X", currentScroll+" "+topLimit+" "+bottomLimit+" "+String.valueOf( ((long)Math.round(currentScroll) >= topLimit && (long)Math.round(currentScroll) <= bottomLimit) ) );
+        return (long)Math.round(currentScroll) >= topLimit && (long)Math.round(currentScroll) <= bottomLimit;
     }
 
     private boolean checkBoundsY(float touchPosition) {
         touchPosition = (float)mainContainer.getScrollY() + (my - touchPosition);
         topLimit = Math.round(scale * (float)(SCREEN_HEIGHT / 8) * ((scale - 1.0F) * 4F) * -1F);
         bottomLimit = Math.round(((float)topLimit + (float)SCREEN_HEIGHT * scale) - (float)getResources().getDisplayMetrics().heightPixels);
-        // Log.d( "Height", ( new StringBuilder() ).append( f ).append( " " ).append( topLimit ).toString() );
-        return (long)Math.round(touchPosition) > topLimit && (long)Math.round(touchPosition) < bottomLimit;
+        return (long)Math.round(touchPosition) >= topLimit && (long)Math.round(touchPosition) <= bottomLimit;
+    }
+
+    private void calculateBounds(){
+        checkBoundsX( 0 );
+        checkBoundsY( 0 );
     }
 
     //Animation methods
@@ -409,16 +413,19 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
         float f;
         boolean canZoom;
-        if (checkBoundsX(scaleGestureDetector.getFocusX()) && checkBoundsY( scaleGestureDetector.getFocusY() ))
+        calculateBounds();
+
+        if (checkBoundsX( mainContainer.getScrollX()) && checkBoundsY( mainContainer.getScrollY() ))
         {
+
             canZoom = true;
         } else
         {
             canZoom = false;
         }
-
+        Log.d( "Czech", "Check "+canZoom );
         f = scaleDetector.getScaleFactor();
-        if (lastScaleFactor == 0.0F || Math.signum(f) == Math.signum(lastScaleFactor) && canZoom)
+        if ((lastScaleFactor == 0.0F || Math.signum(f) == Math.signum(lastScaleFactor)) && canZoom)
         {
             scale = scale * f;
             scale = Math.max(1.0F, Math.min( scale, 3F ) );
