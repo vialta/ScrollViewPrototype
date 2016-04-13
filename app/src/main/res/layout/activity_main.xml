@@ -10,8 +10,8 @@
             <FrameLayout
                 android:id="@+id/uiContainer"
 
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
                 <TextView
                     android:id="@+id/errorText"
@@ -26,8 +26,8 @@
                     android:scaleType="center"
                     android:layout_width="1600dp"
                     android:layout_height="900dp"
-                    android:layout_gravity="start"
-                    android:src="@drawable/vector_drawable_test"/>
+                    android:layout_gravity="start"/>
+
 
                 <Button
                     android:layout_width="wrap_content"
