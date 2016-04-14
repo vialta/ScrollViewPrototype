@@ -38,10 +38,10 @@ public class ScrollableImageActivity extends SingleFragmentActivity
 
     public boolean dispatchTouchEvent(MotionEvent motionevent)
     {
-        super.dispatchTouchEvent(motionevent);
+        super.dispatchTouchEvent( motionevent );
         mFragment.scaleDetector.onTouchEvent(motionevent);
-        mFragment.gestureDetector.onTouchEvent(motionevent);
         mFragment.handleTouchEvent(motionevent);
+        mFragment.gestureDetector.onTouchEvent(motionevent);
         return mFragment.gestureDetector.onTouchEvent(motionevent);
     }
 

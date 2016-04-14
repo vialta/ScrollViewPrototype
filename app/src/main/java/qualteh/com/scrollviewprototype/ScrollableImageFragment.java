@@ -13,10 +13,12 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -35,6 +37,8 @@ import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.OverScroller;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import butterknife.Bind;
@@ -55,6 +59,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ScrollableImageFragment extends Fragment implements View.OnClickListener, ScaleGestureDetector.OnScaleGestureListener
 {
 
+    private float topLeftX = 0;
+    private float topLeftY = 0;
+
+    private float downRightX;
+    private float downRightY;
+
+
     private AnimatorSet animators = new AnimatorSet();
     private static final float MAX_ZOOM = 3F;
     private static final float MIN_ZOOM = 1F;
@@ -73,7 +84,12 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     private int previousScrollX;
     private int previousScrollY;
 
+    private int animationStartX;
+    private int animationStartY;
+
     private long lastScaleTimestamp;
+    private long startTouchTimestamp;
+
     private long leftLimit;
     @Bind( R.id.uiContainer )FrameLayout mFrameLayout;
     @Bind( R.id.button1 ) Button topLeftButton;
@@ -85,6 +101,8 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     @Bind( R.id.contentContainer )FrameLayout mainContainer;
     private float mx;
     private float my;
+    private float startX;
+    private float startY;
     private long rightLimit;
     private float scale;
     public ScaleGestureDetector scaleDetector;
@@ -133,6 +151,9 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
         gestureDetector = new GestureDetector(getContext(), new GestureListener());
         scaleDetector = new ScaleGestureDetector(getActivity(), this);
+
+        downRightX = getResources().getDisplayMetrics().widthPixels;
+        downRightY = getResources().getDisplayMetrics().heightPixels;
 
         mPaint.setColor( Color.RED );
         mPaint.setStrokeWidth( 20F );
@@ -185,7 +206,35 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                 setDatabaseByResponse( false );
             }
         } );
+        animators.addListener( new Animator.AnimatorListener() {
 
+            @Override
+            public void onAnimationStart ( Animator arg0 ) {
+                //mainContainer.scrollTo( animationStartX,animationStartY );
+                previousScrollX = mainContainer.getScrollX();
+                previousScrollY = mainContainer.getScrollY();
+
+                Log.d( "Start Fill ",""+mainContainer.getScrollX()+" "+mainContainer.getScrollY());
+                Log.d( "Animation", "Start" );
+            }
+
+            @Override
+            public void onAnimationRepeat ( Animator arg0 ) {
+                Log.d( "Animation", "Repeat" );
+            }
+
+            @Override
+            public void onAnimationEnd ( Animator arg0 ) {
+                Log.d( "End Fill ", "" + mainContainer.getScrollX() + " " + mainContainer.getScrollY() );
+               // mainContainer.scrollTo( mainContainer.getScrollX(), mainContainer.getScrollY() );
+                Log.d( "Animation", "End" );
+            }
+
+            @Override
+            public void onAnimationCancel ( Animator arg0 ) {
+                Log.d( "Animation", "Cancel" );
+            }
+        } );
         mainContainer.getViewTreeObserver().addOnScrollChangedListener( new ViewTreeObserver.OnScrollChangedListener() {
             @Override
             public void onScrollChanged () {
@@ -194,8 +243,9 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                         if(animators.isRunning()) {
                             Log.d("TAG",""+previousScrollX+" "+previousScrollY+" "+mainContainer.getScrollX()+" "+mainContainer.getScrollY());
                             Log.d( "Scroll STOP", "STAHP!" );
-                            mainContainer.scrollTo( previousScrollX,previousScrollY );
+                            mainContainer.scrollTo( previousScrollX, previousScrollY );
                             animators.cancel();
+
                         }
                     }
                     else{
@@ -204,7 +254,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                     }
                 }
 
-                Log.d( "Scroll Change", "Change" );
+
             }
         } );
 
@@ -397,6 +447,9 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             case MotionEvent.ACTION_DOWN:
                 mx = motionEvent.getX();
                 my = motionEvent.getY();
+                startX = mx;
+                startY = my;
+                startTouchTimestamp = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (motionEvent.getPointerCount() < 2 && System.currentTimeMillis() - lastScaleTimestamp > 500L)
@@ -412,8 +465,14 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                         if(scrollBounds.left>0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels){
                             mainContainer.scrollBy( (int)(mx-curX)*(-1),0 );
                         }
+                        else{
+                            topLeftX+=(mx-curX);
+                        }
                         if(scrollBounds.top>Math.round( 24*getResources().getDisplayMetrics().density+1) || scrollBounds.bottom< getResources().getDisplayMetrics().heightPixels  ) {
                             mainContainer.scrollBy(0, (int)(my - curY)*(-1));
+                        }
+                        else{
+                            topLeftY+=(my-curY);
                         }
                     }
 
@@ -434,6 +493,53 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                 int i = mainContainer.getScrollX();
                 int j = mainContainer.getScrollY();
 
+                Log.d( "Finger Up ",""+mainContainer.getScrollX()+" "+mainContainer.getScrollY());
+
+                if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
+                    if(scrollBounds.left >0){
+                        Log.d("T","Out of bounds");
+                        mainContainer.scrollBy( scrollBounds.left, 0 );
+                    }
+                    if(scrollBounds.right <getResources().getDisplayMetrics().widthPixels){
+                        Log.d("T","Out of bounds");
+                        mainContainer.scrollBy( scrollBounds.right-getResources().getDisplayMetrics().widthPixels ,0 );
+                    }
+                    if(scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) ){
+                        Log.d("T","Out of bounds");
+                        mainContainer.scrollBy( 0 , scrollBounds.top-Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) );
+                    }
+                    if(scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels){
+                        Log.d("T","Out of bounds");
+                        mainContainer.scrollBy( 0 , scrollBounds.bottom-getResources().getDisplayMetrics().heightPixels );
+                    }
+                }
+                long timeMillisDiff = System.currentTimeMillis()-startTouchTimestamp;
+                if(timeMillisDiff<500 && motionEvent.getPointerCount()<2 && System.currentTimeMillis() - lastScaleTimestamp > 500){
+                    Log.d("Should move by",""+(curX - startX)+" "+(curY-startY));
+
+                    Log.d( "Fling From", "" + mainContainer.getScrollX() + " " + mainContainer.getScrollY());
+                    animationStartX = mainContainer.getScrollX();
+                    animationStartY = mainContainer.getScrollY();
+                    Log.d( "Coords ",""+curX+" "+startX+" "+curY+" "+startY );
+                    Log.d( "Fling To", "" +  (mainContainer.getScrollX()-(int)(curX-startX)) + " " + ( mainContainer.getScrollY()-(int)(curY- startY) ));
+
+                    ObjectAnimator xFling = ObjectAnimator.ofInt( mainContainer, "scrollX", mainContainer.getScrollX()-(int)(curX-startX) );
+                    ObjectAnimator yFling = ObjectAnimator.ofInt( mainContainer, "scrollY", mainContainer.getScrollY()-(int)(curY-startY) );
+
+
+
+                    xFling.setInterpolator( new DecelerateInterpolator() );
+                    yFling.setInterpolator( new DecelerateInterpolator() );
+
+
+                    animators = new AnimatorSet();
+
+                    animators.setDuration( 1000 );
+                    animators.playTogether( xFling,yFling );
+                    if(!animators.isRunning()){
+                        animators.start();
+                    }
+                }
                 break;
             default:
                 break;
@@ -447,7 +553,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
         super.onPause();
     }
 
-    //TODO
+
     public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
         float f;
         boolean canZoom=false;
@@ -455,20 +561,13 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
         if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
             if ( !(scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
                 canZoom = true;
-                Log.d("Can zoom","Yes");
             }
-            Log.d("Test",""+(scrollBounds.left > 0)+" "+(scrollBounds.right < getResources().getDisplayMetrics().widthPixels)+" "+(scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density+1 )) +" "+ (scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels));
         }
         f = scaleDetector.getScaleFactor();
         if ((lastScaleFactor == 0.0F || Math.signum(f) == Math.signum(lastScaleFactor))&&canZoom )
         {
             scale = scale * f;
             scale = Math.max(MIN_ZOOM, Math.min( scale, MAX_ZOOM ) );
-
-            Log.d( "Focus", scaleGestureDetector.getFocusX() + " " + scaleGestureDetector.getFocusY() );
-
-            mFrameLayout.setPivotX( scaleGestureDetector.getFocusX() );
-            mFrameLayout.setPivotY( scaleGestureDetector.getFocusY() );
 
             mFrameLayout.setScaleX( scale );
             mFrameLayout.setScaleY( scale );
@@ -489,11 +588,21 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
     public boolean onScaleBegin(ScaleGestureDetector scalegesturedetector)
     {
+        float newX = scaleDetector.getFocusX();
+        float newY = scaleDetector.getFocusY();
+
+        mFrameLayout.setTranslationX( mFrameLayout.getTranslationX() + (mFrameLayout.getPivotX() - newX) * (1-mFrameLayout.getScaleX()) );
+        mFrameLayout.setTranslationY( mFrameLayout.getTranslationY() + ( mFrameLayout.getPivotY() - newY ) * ( 1 - mFrameLayout.getScaleY() ) );
+
+        mFrameLayout.setPivotX( newX );
+        mFrameLayout.setPivotY( newY );
+
         return true;
     }
 
     public void onScaleEnd(ScaleGestureDetector scalegesturedetector) {
         lastScaleTimestamp = System.currentTimeMillis();
+
     }
 
     public void scaleButtonClicked() {
@@ -582,14 +691,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
         public boolean onDoubleTap(MotionEvent motionevent)
         {
-            Log.d("TOPLEFT",topLeftButton.getScrollX()+" "+topLeftButton.getX()+"");
-            Log.d( "Tap", "" + mainContainer.getScrollX() + " " + mainContainer.getScrollY() );
-            Log.d("Limits",""+leftLimit+" "+rightLimit+" "+topLimit+" "+bottomLimit);
-            Log.d( "frameL", "" + mFrameLayout.getX() + " " + mainContainer.getX() + " " + mFrameLayout.getScrollX() + " " + mainContainer.getScrollX() );
-            DisplayMetrics metrics = new DisplayMetrics();
-            getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
-            ViewGroup.MarginLayoutParams mlp = ( ViewGroup.MarginLayoutParams ) mainContainer.getLayoutParams();
-            Log.d("Metrics",""+mlp.leftMargin+" "+mlp.topMargin+" "+mlp.rightMargin+" "+mlp.bottomMargin);
             return true;
         }
 
@@ -598,63 +699,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             return true;
         }
 
-        @Override
-        public boolean onFling ( MotionEvent e1, MotionEvent e2, float velocityX, float velocityY ) {
 
-            double dist = Math.sqrt( Math.pow( ( e2.getX() - e1.getX() ), 2 ) - Math.pow( ( e2.getY() - e1.getY() ), 2 ) );
-
-            if(e1.getPointerCount()<2 && System.currentTimeMillis() - lastScaleTimestamp > 500 && (e2.getEventTime() - e1.getEventTime() <500f ) ){
-
-                int currentX = (int)(mainContainer.getScrollX()- (velocityX/Consts.SIZE_MULTIPLIER*getResources().getDisplayMetrics().density));
-                int currentY = (int)(mainContainer.getScrollY()- (velocityY/Consts.SIZE_MULTIPLIER*getResources().getDisplayMetrics().density));
-
-                Log.d("Pre Fling",""+currentX+" "+currentY + " "+velocityX+" "+velocityY);
-
-
-                ObjectAnimator xFling = ObjectAnimator.ofInt( mainContainer, "scrollX", currentX );
-                ObjectAnimator yFling = ObjectAnimator.ofInt( mainContainer, "scrollY", currentY );
-
-                Log.d( "Post Fling", "" + currentX + " " + currentY );
-
-                xFling.setInterpolator( new DecelerateInterpolator() );
-                yFling.setInterpolator( new DecelerateInterpolator() );
-
-                if(animators.isRunning()){
-                    animators.cancel();
-                }
-                animators.setDuration(1000);
-                animators.playTogether(xFling, yFling);
-                animators.addListener(new Animator.AnimatorListener() {
-
-                    @Override
-                    public void onAnimationStart(Animator arg0) {
-                        previousScrollX = mainContainer.getScrollX();
-                        previousScrollY = mainContainer.getScrollY();
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator arg0) {
-                        // TODO Auto-generated method stub
-
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator arg0) {
-                        // TODO Auto-generated method stub
-                        Log.d("End",mainContainer.getScrollX()+" "+mainContainer.getScrollY());
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator arg0) {
-                        previousScrollX = mainContainer.getScrollX();
-                        previousScrollY = mainContainer.getScrollY();
-
-                    }
-                });
-                animators.start();
-            }
-
-            return false;
-        }
     }
 }
