@@ -40,23 +40,26 @@
       <file leaf-file-name="ScrollableImageFragment.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/qualteh/com/scrollviewprototype/ScrollableImageFragment.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.69201523">
-              <caret line="535" column="0" selection-start-line="535" selection-start-column="0" selection-end-line="535" selection-end-column="0" />
+            <state vertical-scroll-proportion="-0.3555133">
+              <caret line="70" column="47" selection-start-line="70" selection-start-column="47" selection-end-line="70" selection-end-column="47" />
               <folding>
-                <element signature="e#0#28370#0" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#9001#9002#0" expanded="true" />
-                <element signature="e#9063#9064#0" expanded="true" />
-                <element signature="e#9495#9496#0" expanded="true" />
-                <element signature="e#9557#9558#0" expanded="true" />
-                <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-                <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-                <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-                <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-                <element signature="e#28222#28223#0" expanded="true" />
-                <element signature="e#28257#28258#0" expanded="true" />
-                <element signature="e#28323#28324#0" expanded="true" />
-                <element signature="e#28358#28359#0" expanded="true" />
+                <element signature="e#3089#3090#0" expanded="true" />
+                <element signature="e#3141#3142#0" expanded="true" />
+                <element signature="e#3207#3208#0" expanded="true" />
+                <element signature="e#3242#3243#0" expanded="true" />
+                <element signature="e#3289#3290#0" expanded="true" />
+                <element signature="e#3329#3330#0" expanded="true" />
+                <element signature="e#15975#15976#0" expanded="true" />
+                <element signature="e#16006#16007#0" expanded="true" />
+                <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+                <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+                <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+                <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+                <element signature="e#20520#20521#0" expanded="true" />
+                <element signature="e#20555#20556#0" expanded="true" />
+                <element signature="e#20621#20622#0" expanded="true" />
+                <element signature="e#20656#20657#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1987,7 +1990,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="1" width="1678" height="1008" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32911393" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -2044,20 +2047,23 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="506" column="0" selection-start-line="506" selection-start-column="0" selection-end-line="506" selection-end-column="0" />
           <folding>
-            <element signature="e#0#28370#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#9001#9002#0" expanded="true" />
-            <element signature="e#9063#9064#0" expanded="true" />
-            <element signature="e#9495#9496#0" expanded="true" />
-            <element signature="e#9557#9558#0" expanded="true" />
-            <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="e#28222#28223#0" expanded="true" />
-            <element signature="e#28257#28258#0" expanded="true" />
-            <element signature="e#28323#28324#0" expanded="true" />
-            <element signature="e#28358#28359#0" expanded="true" />
+            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#3141#3142#0" expanded="true" />
+            <element signature="e#3207#3208#0" expanded="true" />
+            <element signature="e#3242#3243#0" expanded="true" />
+            <element signature="e#3289#3290#0" expanded="true" />
+            <element signature="e#3329#3330#0" expanded="true" />
+            <element signature="e#15975#15976#0" expanded="true" />
+            <element signature="e#16006#16007#0" expanded="true" />
+            <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="e#20520#20521#0" expanded="true" />
+            <element signature="e#20555#20556#0" expanded="true" />
+            <element signature="e#20621#20622#0" expanded="true" />
+            <element signature="e#20656#20657#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2067,20 +2073,23 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#28370#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#9001#9002#0" expanded="true" />
-            <element signature="e#9063#9064#0" expanded="true" />
-            <element signature="e#9495#9496#0" expanded="true" />
-            <element signature="e#9557#9558#0" expanded="true" />
-            <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="e#28222#28223#0" expanded="true" />
-            <element signature="e#28257#28258#0" expanded="true" />
-            <element signature="e#28323#28324#0" expanded="true" />
-            <element signature="e#28358#28359#0" expanded="true" />
+            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#3141#3142#0" expanded="true" />
+            <element signature="e#3207#3208#0" expanded="true" />
+            <element signature="e#3242#3243#0" expanded="true" />
+            <element signature="e#3289#3290#0" expanded="true" />
+            <element signature="e#3329#3330#0" expanded="true" />
+            <element signature="e#15975#15976#0" expanded="true" />
+            <element signature="e#16006#16007#0" expanded="true" />
+            <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="e#20520#20521#0" expanded="true" />
+            <element signature="e#20555#20556#0" expanded="true" />
+            <element signature="e#20621#20622#0" expanded="true" />
+            <element signature="e#20656#20657#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2090,20 +2099,23 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#28370#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#9001#9002#0" expanded="true" />
-            <element signature="e#9063#9064#0" expanded="true" />
-            <element signature="e#9495#9496#0" expanded="true" />
-            <element signature="e#9557#9558#0" expanded="true" />
-            <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="e#28222#28223#0" expanded="true" />
-            <element signature="e#28257#28258#0" expanded="true" />
-            <element signature="e#28323#28324#0" expanded="true" />
-            <element signature="e#28358#28359#0" expanded="true" />
+            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#3141#3142#0" expanded="true" />
+            <element signature="e#3207#3208#0" expanded="true" />
+            <element signature="e#3242#3243#0" expanded="true" />
+            <element signature="e#3289#3290#0" expanded="true" />
+            <element signature="e#3329#3330#0" expanded="true" />
+            <element signature="e#15975#15976#0" expanded="true" />
+            <element signature="e#16006#16007#0" expanded="true" />
+            <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="e#20520#20521#0" expanded="true" />
+            <element signature="e#20555#20556#0" expanded="true" />
+            <element signature="e#20621#20622#0" expanded="true" />
+            <element signature="e#20656#20657#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2160,20 +2172,23 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#28370#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#9001#9002#0" expanded="true" />
-            <element signature="e#9063#9064#0" expanded="true" />
-            <element signature="e#9495#9496#0" expanded="true" />
-            <element signature="e#9557#9558#0" expanded="true" />
-            <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="e#28222#28223#0" expanded="true" />
-            <element signature="e#28257#28258#0" expanded="true" />
-            <element signature="e#28323#28324#0" expanded="true" />
-            <element signature="e#28358#28359#0" expanded="true" />
+            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#3141#3142#0" expanded="true" />
+            <element signature="e#3207#3208#0" expanded="true" />
+            <element signature="e#3242#3243#0" expanded="true" />
+            <element signature="e#3289#3290#0" expanded="true" />
+            <element signature="e#3329#3330#0" expanded="true" />
+            <element signature="e#15975#15976#0" expanded="true" />
+            <element signature="e#16006#16007#0" expanded="true" />
+            <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="e#20520#20521#0" expanded="true" />
+            <element signature="e#20555#20556#0" expanded="true" />
+            <element signature="e#20621#20622#0" expanded="true" />
+            <element signature="e#20656#20657#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2214,20 +2229,23 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="185" column="14" selection-start-line="185" selection-start-column="14" selection-end-line="185" selection-end-column="14" />
           <folding>
-            <element signature="e#0#28370#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#9001#9002#0" expanded="true" />
-            <element signature="e#9063#9064#0" expanded="true" />
-            <element signature="e#9495#9496#0" expanded="true" />
-            <element signature="e#9557#9558#0" expanded="true" />
-            <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="e#28222#28223#0" expanded="true" />
-            <element signature="e#28257#28258#0" expanded="true" />
-            <element signature="e#28323#28324#0" expanded="true" />
-            <element signature="e#28358#28359#0" expanded="true" />
+            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#3141#3142#0" expanded="true" />
+            <element signature="e#3207#3208#0" expanded="true" />
+            <element signature="e#3242#3243#0" expanded="true" />
+            <element signature="e#3289#3290#0" expanded="true" />
+            <element signature="e#3329#3330#0" expanded="true" />
+            <element signature="e#15975#15976#0" expanded="true" />
+            <element signature="e#16006#16007#0" expanded="true" />
+            <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="e#20520#20521#0" expanded="true" />
+            <element signature="e#20555#20556#0" expanded="true" />
+            <element signature="e#20621#20622#0" expanded="true" />
+            <element signature="e#20656#20657#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -2521,23 +2539,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/qualteh/com/scrollviewprototype/ScrollableImageFragment.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.69201523">
-          <caret line="535" column="0" selection-start-line="535" selection-start-column="0" selection-end-line="535" selection-end-column="0" />
+        <state vertical-scroll-proportion="-0.3555133">
+          <caret line="70" column="47" selection-start-line="70" selection-start-column="47" selection-end-line="70" selection-end-column="47" />
           <folding>
-            <element signature="e#0#28370#0" expanded="true" />
             <element signature="imports" expanded="true" />
-            <element signature="e#9001#9002#0" expanded="true" />
-            <element signature="e#9063#9064#0" expanded="true" />
-            <element signature="e#9495#9496#0" expanded="true" />
-            <element signature="e#9557#9558#0" expanded="true" />
-            <element signature="method#checkBoundsX#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#checkBoundsY#1;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="method#calculateBounds#0;class#ScrollableImageFragment#0" expanded="false" />
-            <element signature="e#28222#28223#0" expanded="true" />
-            <element signature="e#28257#28258#0" expanded="true" />
-            <element signature="e#28323#28324#0" expanded="true" />
-            <element signature="e#28358#28359#0" expanded="true" />
+            <element signature="e#3089#3090#0" expanded="true" />
+            <element signature="e#3141#3142#0" expanded="true" />
+            <element signature="e#3207#3208#0" expanded="true" />
+            <element signature="e#3242#3243#0" expanded="true" />
+            <element signature="e#3289#3290#0" expanded="true" />
+            <element signature="e#3329#3330#0" expanded="true" />
+            <element signature="e#15975#15976#0" expanded="true" />
+            <element signature="e#16006#16007#0" expanded="true" />
+            <element signature="method#logBuildingCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logMainCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="method#logStorageCoords#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="class#GestureListener#0;class#ScrollableImageFragment#0" expanded="false" />
+            <element signature="e#20520#20521#0" expanded="true" />
+            <element signature="e#20555#20556#0" expanded="true" />
+            <element signature="e#20621#20622#0" expanded="true" />
+            <element signature="e#20656#20657#0" expanded="true" />
           </folding>
         </state>
       </provider>
