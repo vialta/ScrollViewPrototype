@@ -381,6 +381,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
         if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
             if ( !(scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
                 canZoom = true;
+
             }
         }
         factor = scaleDetector.getScaleFactor();
@@ -396,11 +397,23 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
             mFrameLayout.invalidate();
             mFrameLayout.requestLayout();
-            lastScale = scale;
+            mainContainer.getHitRect( scrollBounds );
+            if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
+                if ( !(scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
+                    lastScale=scale;
+                }
+                else{
+                    scale = lastScale;
+                    mFrameLayout.setScaleX( scale );
+                    mFrameLayout.setScaleY( scale );
+                }
+            }
+
             lastScaleFactor = factor;
             return true;
         } else
         {
+
             lastScaleFactor = 0.0F;
             return true;
         }
