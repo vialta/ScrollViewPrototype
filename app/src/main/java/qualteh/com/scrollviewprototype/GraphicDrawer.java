@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import qualteh.com.scrollviewprototype.Model.Building;
+import qualteh.com.scrollviewprototype.Model.Commission;
 import qualteh.com.scrollviewprototype.Model.MainCoordinates;
 import qualteh.com.scrollviewprototype.Model.MapModel;
 import qualteh.com.scrollviewprototype.Model.Storage;
@@ -47,6 +48,7 @@ class GraphicDrawer
 
         final List<Double> points = mapModel.getMainCoordinates().getCoordinates();
         final List<Storage> storages = mapModel.getStorage();
+        final List<Commission> commissions = mapModel.getCommissions();
 
         String s="";
         for(int i=0;i<points.size();i++){
@@ -69,10 +71,10 @@ class GraphicDrawer
                     paint.setStrokeWidth( building.getStrokeWidth().intValue() );
                     paint.setColor( Color.parseColor( building.getStrokeColor() ) );
                     for ( int j = 0 ; j < building.getCoordinates().size() - 2 ; j += 2 ) {
-                        canvas.drawLine( ( ( Double ) building.getCoordinates().get( j ) ).intValue(), ( ( Double ) building.getCoordinates().get( j + 1 ) ).intValue(), ( ( Double ) building.getCoordinates().get( j + 2 ) ).intValue(), ( ( Double ) building.getCoordinates().get( j + 3 ) ).intValue(), paint );
+                        canvas.drawLine( ( building.getCoordinates().get( j ) ).intValue(), ( building.getCoordinates().get( j + 1 ) ).intValue(), ( building.getCoordinates().get( j + 2 ) ).intValue(), ( building.getCoordinates().get( j + 3 ) ).intValue(), paint );
                     }
 
-                    canvas.drawLine( ( ( Double ) building.getCoordinates().get( building.getCoordinates().size() - 2 ) ).intValue(), ( ( Double ) building.getCoordinates().get( building.getCoordinates().size() - 1 ) ).intValue(), ( ( Double ) building.getCoordinates().get( 0 ) ).intValue(), ( ( Double ) building.getCoordinates().get( 1 ) ).intValue(), paint );
+                    canvas.drawLine( ( building.getCoordinates().get( building.getCoordinates().size() - 2 ) ).intValue(), ( building.getCoordinates().get( building.getCoordinates().size() - 1 ) ).intValue(), ( building.getCoordinates().get( 0 ) ).intValue(), ( building.getCoordinates().get( 1 ) ).intValue(), paint );
                     button = new Button( ScrollableImageActivity.getActivityContext() );
                     FrameLayout.LayoutParams layoutparams = new FrameLayout.LayoutParams( GraphicDrawer.scaleX( building.getCoordinates() ), GraphicDrawer.scaleY( building.getCoordinates() ) );
                     layoutparams.setMargins( GraphicDrawer.minX( building.getCoordinates() ), GraphicDrawer.minY( building.getCoordinates() ), 0, 0 );
@@ -85,16 +87,16 @@ class GraphicDrawer
                 }
 
                 Button button1;
-                for ( Iterator iterator1 = storages.iterator() ; iterator1.hasNext() ; frame.addView( button1 ) ) {
-                    Storage storage = ( Storage ) iterator1.next();
-                    int fillValue = storage.getFilling();
+                for ( Iterator iterator = storages.iterator() ; iterator.hasNext() ; frame.addView( button1 ) ) {
+                    Storage storage = ( Storage ) iterator.next();
+                    int fillValue = storage.getStock();
                     paint.setStrokeWidth( storage.getStrokeWidth().intValue() );
                     paint.setStrokeWidth( 2 );
                     paint.setColor( Color.rgb( ( int ) (fillValue*2.55), 255-(int)(fillValue*2.55),0 ) );
                     for ( int k = 0 ; k < storage.getCoordinates().size() - 2 ; k += 2 ) {
-                        canvas.drawLine( ( ( Double ) storage.getCoordinates().get( k ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 1 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 2 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 3 ) ).intValue(), paint );
+                        canvas.drawLine( (  storage.getCoordinates().get( k ) ).intValue(), (  storage.getCoordinates().get( k + 1 ) ).intValue(), (  storage.getCoordinates().get( k + 2 ) ).intValue(), (  storage.getCoordinates().get( k + 3 ) ).intValue(), paint );
                     }
-                    canvas.drawLine( ( ( Double ) storage.getCoordinates().get( storage.getCoordinates().size() - 2 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( storage.getCoordinates().size() - 1 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( 0 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( 1 ) ).intValue(), paint );
+                    canvas.drawLine( (  storage.getCoordinates().get( storage.getCoordinates().size() - 2 ) ).intValue(), (  storage.getCoordinates().get( storage.getCoordinates().size() - 1 ) ).intValue(), (  storage.getCoordinates().get( 0 ) ).intValue(), (  storage.getCoordinates().get( 1 ) ).intValue(), paint );
 
                     Double minWidthStorage  = storage.getCoordinates().get( 0 );
                     Double maxWidthStorage  = storage.getCoordinates().get( 0 );
@@ -136,7 +138,21 @@ class GraphicDrawer
                         }
                     });
                 }
-            }
+
+                Log.d("Commission Size", String.valueOf( commissions.size() ) );
+                for ( Iterator iterator =  commissions.iterator() ; iterator.hasNext() ;  ) {
+                    Commission commission = ( Commission ) iterator.next();
+
+                    paint.setStrokeWidth( commission.getStrokeWidth() );
+                    paint.setColor( Color.parseColor( commission.getStrokeColor() ) );
+                    Log.d("Commisssion", String.valueOf( commission.getCoordinates().size() ) );
+                    for ( int k = 0 ; k < commission.getCoordinates().size() - 2 ; k += 2 ) {
+                        canvas.drawLine( ( commission.getCoordinates().get( k ) ).intValue(), ( commission.getCoordinates().get( k + 1 ) ).intValue(), ( commission.getCoordinates().get( k + 2 ) ).intValue(), ( commission.getCoordinates().get( k + 3 ) ).intValue(), paint );
+                    }
+                    canvas.drawLine( ( commission.getCoordinates().get( commission.getCoordinates().size() - 2 ) ).intValue(), ( commission.getCoordinates().get( commission.getCoordinates().size() - 1 ) ).intValue(), ( commission.getCoordinates().get( 0 ) ).intValue(), ( commission.getCoordinates().get( 1 ) ).intValue(), paint );
+                }
+
+                }
 
             @Override
             public void setAlpha ( int alpha ) {

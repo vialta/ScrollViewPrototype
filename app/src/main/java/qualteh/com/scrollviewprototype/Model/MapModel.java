@@ -22,6 +22,7 @@ public class MapModel
     private MainCoordinates mainCoordinates;
     private String name;
     private List<Storage> storage = new ArrayList<Storage>(  );
+    private List<Commission> commissions = new ArrayList<>(  );
     private Integer version;
 
 
@@ -34,6 +35,9 @@ public class MapModel
         for(Storage s:storage){
             s.adjustCoordinates( d );
         }
+        for(Commission c:commissions){
+            c.adjustCoordinates( d );
+        }
     }
 
     public void adjustCoordinates(int i)
@@ -43,6 +47,9 @@ public class MapModel
         }
         for(Storage s:storage){
             s.adjustCoordinates( i );
+        }
+        for(Commission c:commissions){
+            c.adjustCoordinates( i );
         }
     }
 
@@ -70,6 +77,8 @@ public class MapModel
     {
         return name;
     }
+
+    public List<Commission> getCommissions(){ return commissions; }
 
     public List<Storage> getStorage()
     {
@@ -105,6 +114,8 @@ public class MapModel
     {
         name = s;
     }
+
+    public void setCommissions(List<Commission> list){ commissions=list; }
 
     public void setStorage(List<Storage> list)
     {

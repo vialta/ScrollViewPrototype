@@ -10,6 +10,6 @@ import retrofit2.http.POST;
 
 public interface ApiInterface
 {
-    @POST("JsonTest.html")
+    @POST("JsonTest2.html")
     public Call<MapModel> callVersion ();
 }

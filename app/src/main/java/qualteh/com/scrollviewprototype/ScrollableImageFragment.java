@@ -164,6 +164,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
         call.enqueue( new Callback<MapModel>() {
             @Override
             public void onResponse ( Call<MapModel> call, Response<MapModel> response ) {
+                Log.d("Response", String.valueOf( response.body().getCommissions().size() ) );
                 mMapData = ( MapModel ) response.body();
                 mMapData.getMainCoordinates().adjustCoordinates( getResources().getDisplayMetrics().density );
                 mMapData.adjustCoordinates( getResources().getDisplayMetrics().density );
@@ -172,6 +173,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
             @Override
             public void onFailure ( Call<MapModel> call, Throwable throwable ) {
+                Log.d("Error",throwable.getMessage());
                 setDatabaseByResponse( false );
             }
         } );
