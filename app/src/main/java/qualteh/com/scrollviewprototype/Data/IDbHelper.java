@@ -6,19 +6,22 @@ package qualteh.com.scrollviewprototype.Data;
 
 import android.database.sqlite.SQLiteDatabase;
 import java.util.List;
+
+import qualteh.com.scrollviewprototype.Model.Building;
 import qualteh.com.scrollviewprototype.Model.MainCoordinates;
 import qualteh.com.scrollviewprototype.Model.MapModel;
+import qualteh.com.scrollviewprototype.Model.Storage;
 
 public interface IDbHelper
 {
 
-    public abstract void addBuildings ( SQLiteDatabase sqlitedatabase, List list, int i );
+    public abstract void addBuildings ( SQLiteDatabase sqlitedatabase, List<Building> list, int i );
 
     public abstract void addMainCoordinates ( SQLiteDatabase sqlitedatabase, MainCoordinates maincoordinates, int i );
 
     public abstract void addMapModel ( SQLiteDatabase sqlitedatabase, MapModel mapmodel );
 
-    public abstract void addStorages ( SQLiteDatabase sqlitedatabase, List list, int i );
+    public abstract void addStorages ( SQLiteDatabase sqlitedatabase, List<Storage> list, int i );
 
     public abstract void dropBuildings ( SQLiteDatabase sqlitedatabase );
 

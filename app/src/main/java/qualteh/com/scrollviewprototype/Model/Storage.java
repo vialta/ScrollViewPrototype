@@ -18,6 +18,8 @@ public class Storage
     private String id;
     private String strokeColor;
     private Integer strokeWidth;
+    private Integer stock;
+    private Integer capacity;
 
     public void adjustCoordinates(double d)
     {
@@ -47,6 +49,13 @@ public class Storage
 
     }
 
+//    public void adjustStock(){
+//        if(stock>capacity)
+//            filling=100;
+//        if(filling<0)
+//            filling=0;
+//    }
+
     public Map getAdditionalProperties()
     {
         return additionalProperties;
@@ -72,6 +81,10 @@ public class Storage
         return strokeWidth;
     }
 
+    public Integer getStock(){ return stock;}
+
+    public Integer getCapacity() {return capacity;}
+
     public void setAdditionalProperty(String s, Object obj)
     {
         additionalProperties.put(s, obj);
@@ -96,4 +109,8 @@ public class Storage
     {
         strokeWidth = integer;
     }
+
+    public void setStock ( Integer integer){ stock=integer;}
+
+    public void setCapacity ( Integer integer){ capacity=integer;}
 }

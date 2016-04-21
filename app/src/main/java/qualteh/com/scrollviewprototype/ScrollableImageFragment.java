@@ -53,6 +53,9 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     private static final float MIN_ZOOM = 1F;
     private static double SCREEN_DENSITY;
 
+
+    int scaleAnimCounter=0;
+
     private boolean animationIsRunning;
     private DemoMachine demoMachine;
     @Bind( R.id.errorText )TextView firstTimeTextError;
@@ -385,38 +388,63 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             }
         }
         factor = scaleDetector.getScaleFactor();
-        if ((lastScaleFactor == 0.0F || Math.signum(factor) == Math.signum(lastScaleFactor))&&canZoom )
-        {
-            scale = scale * factor;
-            scale = Math.max(MIN_ZOOM, Math.min( scale, MAX_ZOOM ) );
 
-            mFrameLayout.setScaleX( scale );
-            mFrameLayout.setScaleY( scale );
+        if(canZoom){
+            if ((lastScaleFactor == 0.0F || Math.signum(factor) == Math.signum(lastScaleFactor))) {
+                scale = scale * factor;
+                scale = Math.max(MIN_ZOOM, Math.min( scale, MAX_ZOOM ) );
 
-            mFrameLayout.setLayoutParams( new FrameLayout.LayoutParams( Math.round( ( float ) mFrameLayout.getWidth() ), Math.round( ( float ) mFrameLayout.getHeight() ) ) );
+                mFrameLayout.setScaleX( scale );
+                mFrameLayout.setScaleY( scale );
 
-            mFrameLayout.invalidate();
-            mFrameLayout.requestLayout();
-            mainContainer.getHitRect( scrollBounds );
-            if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
-                if ( !(scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
-                    lastScale=scale;
+                mFrameLayout.setLayoutParams( new FrameLayout.LayoutParams( Math.round( ( float ) mFrameLayout.getWidth() ), Math.round( ( float ) mFrameLayout.getHeight() ) ) );
+
+                mFrameLayout.invalidate();
+                mFrameLayout.requestLayout();
+                mainContainer.getHitRect( scrollBounds );
+                if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
+                    if ( !(scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
+                        lastScale=scale;
+                    }
+                    else{
+                        if(scale>1) {
+                            if ( scrollBounds.left > 0 ) {
+                                mainContainer.setPivotX( getResources().getDisplayMetrics().widthPixels );
+                            }
+                            if ( scrollBounds.right < getResources().getDisplayMetrics().widthPixels ) {
+                                mainContainer.setPivotX( 0 );
+                            }
+                            if ( scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) ) {
+                                mainContainer.setPivotY( getResources().getDisplayMetrics().heightPixels );
+                            }
+                            if ( scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels ) {
+                                mainContainer.setPivotY( 0 );
+                            }
+                        }
+                        mFrameLayout.setScaleX( scale );
+                        mFrameLayout.setScaleY( scale );
+                        if ( scrollBounds.left > 0 ) {
+                            mainContainer.scrollBy( scrollBounds.left,0 );
+                        }
+                        if ( scrollBounds.right < getResources().getDisplayMetrics().widthPixels ) {
+                            mainContainer.scrollBy( scrollBounds.right-getResources().getDisplayMetrics().widthPixels,0 );
+                        }
+                        if ( scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) ) {
+                            mainContainer.scrollBy(0,scrollBounds.top-Math.round( 24 * getResources().getDisplayMetrics().density + 1 ));
+                        }
+                        if ( scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels ) {
+                            mainContainer.scrollBy(0,scrollBounds.bottom-getResources().getDisplayMetrics().heightPixels);
+                        }
+
+                    }
                 }
-                else{
-                    scale = lastScale;
-                    mFrameLayout.setScaleX( scale );
-                    mFrameLayout.setScaleY( scale );
-                }
+                lastScaleFactor = factor;
             }
-
-            lastScaleFactor = factor;
-            return true;
-        } else
-        {
-
-            lastScaleFactor = 0.0F;
-            return true;
+            else {
+                lastScaleFactor = 0.0F;
+            }
         }
+       return true;
     }
 
     public boolean onScaleBegin(ScaleGestureDetector scalegesturedetector)

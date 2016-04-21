@@ -28,30 +28,80 @@ public class DbHelper extends SQLiteOpenHelper
         super(context, "map_model.db", null, 1);
     }
 
-    public void addBuildings(SQLiteDatabase sqlitedatabase, List list, int i)
+    public void addBuildings(SQLiteDatabase sqlitedatabase, List<Building> buildingList, int i)
     {
-        for (int j = 0; j < list.size(); j++)
+        for (int j = 0; j < buildingList.size(); j++)
         {
-            String query = ( new StringBuilder() ).append( "INSERT INTO building_table(_map_id, _name, _building_stroke_width, _building_stroke_color) VALUES (" ).append( i ).append( ", '" ).append( ( ( Building ) list.get( j ) ).getName() ).append( "', " ).append( ( ( Building ) list.get( j ) ).getStrokeWidth() ).append( ", '" ).append( ( ( Building ) list.get( j ) ).getStrokeColor() ).append( "' )" ).toString();
-           // Log.d("Debug",query);
+            String query = "INSERT INTO "+
+                    TABLE_NAME_BUILDING+
+                    "(" +
+                    COLUMN_BUILDING_MAP_ID+
+                    ", " +
+                    COLUMN_BUILDING_NAME+
+                    ", " +
+                    COLUMN_BUILDING_STROKE_WIDTH +
+                    ", " +
+                    COLUMN_BUILDING_STROKE_COLOR +
+                    ") " +
+                    "VALUES " +
+                    "(" +
+                    i +
+                    ", '" +
+                    (  buildingList.get( j ) ).getName() +
+                    "', " +
+                    (  buildingList.get( j ) ).getStrokeWidth() +
+                    ", '" +
+                    (  buildingList.get( j ) ).getStrokeColor() +
+                    "' )" ;
+
             sqlitedatabase.execSQL( query );
-            for (int k = 0; k < ((Building)list.get(j)).getCoordinates().size(); k += 2)
+            for (int k = 0; k < (buildingList.get(j)).getCoordinates().size(); k += 2)
             {
-                query = (new StringBuilder()).append("INSERT INTO building_coordinates_table(_x, _y, _building_id) VALUES (").append(((Building)list.get(j)).getCoordinates().get(k)).append(", ").append(((Building)list.get(j)).getCoordinates().get(k + 1)).append(", ").append(j).append(")").toString();
-             //   Log.d("Debug",query);
+                query = "INSERT INTO " +
+                        TABLE_NAME_BUILDING_COORDINATES +
+                        "(" +
+                        COLUMN_BUILDING_COORDINATE_X +
+                        ", " +
+                        COLUMN_BUILDING_COORDINATE_Y +
+                        ", " +
+                        COLUMN_BUILDING_COORDINATE_BUILDING_ID +
+                        ") " +
+                        "VALUES " +
+                        "("+
+                        (buildingList.get(j)).getCoordinates().get(k)+
+                        ", "+
+                        (buildingList.get(j)).getCoordinates().get(k + 1)+
+                        ", "+
+                        j+
+                        ")";
                 sqlitedatabase.execSQL(query);
             }
-
         }
-
     }
 
     public void addMainCoordinates(SQLiteDatabase sqlitedatabase, MainCoordinates maincoordinates, int i)
     {
         for (int j = 0; j < maincoordinates.getCoordinates().size(); j += 2)
         {
-            String query = (new StringBuilder()).append("INSERT INTO map_model_coordinates_table(_x, _y, _map_id ) VALUES (").append(maincoordinates.getCoordinates().get(j)).append(", ").append(maincoordinates.getCoordinates().get(j + 1)).append(", ").append(i).append(" )").toString();
-           // Log.d("Debug",query);
+            String query = "INSERT INTO " +
+                    TABLE_NAME_MAP_MODEL_COORDINATES+
+                    "(" +
+                    COLUMN_MAP_COORDINATE_X +
+                    ", " +
+                    COLUMN_MAP_COORDINATE_Y +
+                    ", " +
+                    COLUMN_MAP_COORDINATE_MAP_ID +
+                    " ) " +
+                    "VALUES " +
+                    "("+
+                    maincoordinates.getCoordinates().get(j)+
+                    ", "+
+                    maincoordinates.getCoordinates().get(j + 1)+
+                    ", "+
+                    i+
+                    " )";
+
+
             sqlitedatabase.execSQL(query);
         }
 
@@ -59,25 +109,84 @@ public class DbHelper extends SQLiteOpenHelper
 
     public void addMapModel(SQLiteDatabase sqlitedatabase, MapModel mapmodel)
     {
-        String query = (new StringBuilder()).append("INSERT INTO map_model_table(_map_id, _name, _version, _map_stroke_width, _map_stroke_color) VALUES (").append(mapmodel.getId()).append(", '").append(mapmodel.getName()).append("', ").append(mapmodel.getVersion()).append(", ").append(mapmodel.getMainCoordinates().getStrokeWidth()).append(", '").append(mapmodel.getMainCoordinates().getStrokeColor()).append("' ").append(")").toString();
-       // Log.d("Debug",query);
+        String query = "INSERT INTO " +
+                TABLE_NAME_MAP_MODEL+
+                "(" +
+                COLUMN_MAP_ID +
+                ", " +
+                COLUMN_MAP_NAME +
+                ", " +
+                COLUMN_MAP_VERSION +
+                ", " +
+                COLUMN_MAP_STROKE_WIDTH +
+                ", " +
+                COLUMN_MAP_STROKE_COLOR +
+                ") VALUES ("+
+                mapmodel.getId()+
+                ", '"+
+                mapmodel.getName()+
+                "', "+
+                mapmodel.getVersion()+
+                ", "+
+                mapmodel.getMainCoordinates().getStrokeWidth()+
+                ", '"+
+                mapmodel.getMainCoordinates().getStrokeColor()+
+                "' "+
+                ")";
+
         sqlitedatabase.execSQL(query);
         addMainCoordinates(sqlitedatabase, mapmodel.getMainCoordinates(), mapmodel.getId());
         addBuildings(sqlitedatabase, mapmodel.getBuildings(), mapmodel.getId());
         addStorages(sqlitedatabase, mapmodel.getStorage(), mapmodel.getId());
     }
 
-    public void addStorages(SQLiteDatabase sqlitedatabase, List list, int i)
+    public void addStorages(SQLiteDatabase sqlitedatabase, List<Storage> list, int i)
     {
         for (int j = 0; j < list.size(); j++)
         {
-            String query = (new StringBuilder().append("INSERT INTO storage_table(_storage_map_id, _storage_id, _storage_stroke_width, _storage_stroke_color) VALUES (").append(i).append(", '").append(((Storage)list.get(j)).getId()).append("', ").append(((Storage)list.get(j)).getStrokeWidth()).append(", '").append(((Storage)list.get(j)).getStrokeColor()).append("' )").toString());
-           // Log.d("Debug",query);
+            String query = "INSERT INTO " +
+                    TABLE_NAME_STORAGE+
+                    "(" +
+                    COLUMN_STORAGE_MAP_ID +
+                    ", " +
+                    COLUMN_STORAGE_ID +
+                    ", " +
+                    COLUMN_STORAGE_STROKE_WIDTH +
+                    ", " +
+                    COLUMN_STORAGE_STROKE_COLOR +
+                    ", " +
+                    COLUMN_STORAGE_STOCK +
+                    ", " +
+                    COLUMN_STORAGE_CAPACITY +
+                    ") " +
+                    "VALUES ("+
+                    ", '"+
+                    (list.get(j)).getId()+
+                    "', "+
+                    (list.get(j)).getStrokeWidth() +
+                    ", '"+
+                    (list.get(j)).getStrokeColor()+
+                    "', "+
+                    (  list.get(j) ).getFilling() +
+                    " )";
+
             sqlitedatabase.execSQL(query);
-            for (int k = 0; k < ((Storage)list.get(j)).getCoordinates().size(); k += 2)
+            for (int k = 0; k < (list.get(j)).getCoordinates().size(); k += 2)
             {
-                query =(new StringBuilder()).append("INSERT INTO storage_table_coordinates(_x, _y, _storage_id) VALUES (").append(((Storage)list.get(j)).getCoordinates().get(k)).append(", ").append(((Storage)list.get(j)).getCoordinates().get(k + 1)).append(", '").append(((Storage)list.get(j)).getId()).append("')").toString();
-             //   Log.d("Debug",query);
+                query ="INSERT INTO " +
+                        TABLE_NAME_STORAGE_COORDINATES +
+                        "(" +
+                        COLUMN_STORAGE_COORDINATE_X +
+                        ", " +
+                        COLUMN_STORAGE_COORDINATE_Y +
+                        ", " +
+                        COLUMN_STORAGE_COORDINATE_STORAGE_ID +
+                        ") VALUES ("+
+                        (list.get(j)).getCoordinates().get(k)+
+                        ", "+
+                        (list.get(j)).getCoordinates().get(k + 1)+
+                        ", '"+(list.get(j)).getId()+"')";
+
                 sqlitedatabase.execSQL(query);
             }
 
@@ -234,15 +343,17 @@ public class DbHelper extends SQLiteOpenHelper
         ArrayList arraylist = new ArrayList();
         Cursor cursor = sqlitedatabase.rawQuery("SELECT * FROM storage_table", null);
         boolean flag = cursor.moveToFirst();
-        int i = cursor.getColumnIndex("_storage_id");
-        int k = cursor.getColumnIndex("_storage_stroke_width");
-        int l = cursor.getColumnIndex("_storage_stroke_color");
+        int storageIdIndex = cursor.getColumnIndex("_storage_id");
+        int storageStrokeWidthIndex = cursor.getColumnIndex("_storage_stroke_width");
+        int storageStrokeColorIndex = cursor.getColumnIndex("_storage_stroke_color");
+        int storageFillingIndex = cursor.getColumnIndex( "_filling" );
         for (; flag; flag = cursor.moveToNext())
         {
             Storage storage = new Storage();
-            storage.setId(cursor.getString(i));
-            storage.setStrokeWidth(Integer.valueOf(cursor.getInt(k)));
-            storage.setStrokeColor(cursor.getString(l));
+            storage.setId(cursor.getString(storageIdIndex));
+            storage.setStrokeWidth(Integer.valueOf(cursor.getInt(storageStrokeWidthIndex)));
+            storage.setStrokeColor(cursor.getString(storageStrokeColorIndex));
+            storage.setStock(Integer.valueOf( cursor.getInt( storageFillingIndex ) ) );
             arraylist.add(storage);
         }
 
@@ -275,7 +386,7 @@ public class DbHelper extends SQLiteOpenHelper
         sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS map_model_coordinates_table (_id INTEGER PRIMARY KEY AUTOINCREMENT, _x REAL NOT NULL, _y REAL NOT NULL, _map_id INTEGER NOT NULL )");
         sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS building_table (_id INTEGER PRIMARY KEY AUTOINCREMENT, _map_id INTEGER NOT NULL, _name VARCHAR(255) NOT NULL, _building_stroke_width INTEGER NOT NULL, _building_stroke_color VARCHAR(7) NOT NULL ) ");
         sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS building_coordinates_table (_id INTEGER PRIMARY KEY AUTOINCREMENT, _x REAL NOT NULL, _y REAL NOT NULL, _building_id INTEGER NOT NULL ) ");
-        sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS storage_table (_id INTEGER PRIMARY KEY AUTOINCREMENT, _storage_id VARCHAR(10) NOT NULL, _storage_map_id INTEGER NOT NULL, _storage_stroke_width INTEGER NOT NULL, _storage_stroke_color VARCHAR(7) NOT NULL ) ");
+        sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS storage_table (_id INTEGER PRIMARY KEY AUTOINCREMENT, _storage_id VARCHAR(10) NOT NULL, _storage_map_id INTEGER NOT NULL, _storage_stroke_width INTEGER NOT NULL, _storage_stroke_color VARCHAR(7) NOT NULL, _filling INTEGER NOT NULL  )");
         sqlitedatabase.execSQL("CREATE TABLE IF NOT EXISTS storage_table_coordinates (_id INTEGER PRIMARY KEY AUTOINCREMENT, _x REAL NOT NULL, _y REAL NOT NULL, _storage_id VARCHAR(10) NOT NULL )");
     }
 
@@ -342,7 +453,7 @@ public class DbHelper extends SQLiteOpenHelper
 
         for (i = 0; i < list.size(); i++)
         {
-            sqlitedatabase.execSQL((new StringBuilder()).append("UPDATE storage_table SET _storage_id = '").append(((Storage)list.get(i)).getId()).append("', ").append("_storage_stroke_width").append(" = ").append(((Storage)list.get(i)).getStrokeWidth()).append(", ").append("_storage_stroke_color").append(" = '").append(((Storage)list.get(i)).getStrokeColor()).append("' WHERE ").append("_id").append(" = ").append(i + 1).append("").toString());
+            sqlitedatabase.execSQL((new StringBuilder()).append("UPDATE storage_table SET _storage_id = '").append(((Storage)list.get(i)).getId()).append("', ").append("_storage_stroke_width").append(" = ").append(((Storage)list.get(i)).getStrokeWidth()).append(", ").append("_storage_stroke_color").append(" = '").append(((Storage)list.get(i)).getStrokeColor()).append("', _filling").append(" = '").append( ( ( Storage ) list.get( i ) ).getFilling() ).append("' WHERE ").append("_id").append(" = ").append(i + 1).append("").toString());
         }
 
     }

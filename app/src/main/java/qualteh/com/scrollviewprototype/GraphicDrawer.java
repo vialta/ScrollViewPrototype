@@ -39,8 +39,7 @@ class GraphicDrawer
         imageView.setBackgroundColor( 0xff444444 );
         Object obj = mapModel.getMainCoordinates().getCoordinates();
         demoMachine = new DemoMachine();
-//        for (obj = ((List) (obj)).iterator(); ((Iterator) (obj)).hasNext(); demoMachine.add( Integer.valueOf(((Double)((Iterator) (obj)).next()).intValue()))
-//                ) { }
+
 
         final FrameLayout frame = frameLayout;
         final MapModel mMapData = mapModel;
@@ -53,7 +52,6 @@ class GraphicDrawer
         for(int i=0;i<points.size();i++){
             s+=points.get( i ).toString();
         }
-        Log.d("I'mScrewed",s);
 
         imageView.setImageDrawable( new Drawable() {
             @Override
@@ -61,7 +59,6 @@ class GraphicDrawer
                 paint.setStrokeWidth( mMapData.getMainCoordinates().getStrokeWidth().intValue() );
                 paint.setColor( Color.parseColor( mMapData.getMainCoordinates().getStrokeColor() ) );
                 for ( int i = 0 ; i < points.size() - 2 ; i += 2 ) {
-                    Log.d( "Main Coords Draw", ( new StringBuilder() ).append( points.get( i ) ).append( " " ).append( points.get( i + 1 ) ).toString() );
                     canvas.drawLine(   Math.round(points.get( i )) ,  Math.round( points.get( i + 1 )), Math.round( points.get( i + 2 )), Math.round( points.get( i + 3 )), paint );
                 }
 
@@ -90,19 +87,46 @@ class GraphicDrawer
                 Button button1;
                 for ( Iterator iterator1 = storages.iterator() ; iterator1.hasNext() ; frame.addView( button1 ) ) {
                     Storage storage = ( Storage ) iterator1.next();
+                    int fillValue = storage.getFilling();
                     paint.setStrokeWidth( storage.getStrokeWidth().intValue() );
-                    paint.setColor( Color.parseColor( storage.getStrokeColor() ) );
+                    paint.setStrokeWidth( 2 );
+                    paint.setColor( Color.rgb( ( int ) (fillValue*2.55), 255-(int)(fillValue*2.55),0 ) );
                     for ( int k = 0 ; k < storage.getCoordinates().size() - 2 ; k += 2 ) {
                         canvas.drawLine( ( ( Double ) storage.getCoordinates().get( k ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 1 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 2 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( k + 3 ) ).intValue(), paint );
                     }
-
                     canvas.drawLine( ( ( Double ) storage.getCoordinates().get( storage.getCoordinates().size() - 2 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( storage.getCoordinates().size() - 1 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( 0 ) ).intValue(), ( ( Double ) storage.getCoordinates().get( 1 ) ).intValue(), paint );
+
+                    Double minWidthStorage  = storage.getCoordinates().get( 0 );
+                    Double maxWidthStorage  = storage.getCoordinates().get( 0 );
+                    Double minHeightStorage = storage.getCoordinates().get( 1 );
+                    Double maxHeightStorage = storage.getCoordinates().get( 1 );
+
+                    for(int k=0; k<storage.getCoordinates().size(); k+=2 ){
+                        if(minWidthStorage>storage.getCoordinates().get( k )){
+                            minWidthStorage = storage.getCoordinates().get( k );
+                        }
+                        if(maxWidthStorage<storage.getCoordinates().get( k )){
+                            maxWidthStorage = storage.getCoordinates().get(k);
+                        }
+                        if(minHeightStorage>storage.getCoordinates().get( k+1 )){
+                            minHeightStorage = storage.getCoordinates().get( k+1 );
+                        }
+                        if(maxHeightStorage<storage.getCoordinates().get( k+1 )){
+                            maxHeightStorage = storage.getCoordinates().get( k+1 );
+                        }
+                    }
+
+                    double topHeightStorage = maxHeightStorage - ((maxHeightStorage - minHeightStorage)/100 * fillValue);
+
+                    canvas.drawRect( Math.round( minWidthStorage ) *1.0f, Math.round( topHeightStorage ) *1.0f, Math.round( maxWidthStorage ) *1.0f, Math.round( maxHeightStorage ) *1.0f, paint );
+
                     button1 = new Button( ScrollableImageActivity.getActivityContext() );
                     FrameLayout.LayoutParams layoutparams1 = new FrameLayout.LayoutParams( GraphicDrawer.scaleX( storage.getCoordinates() ), GraphicDrawer.scaleY( storage.getCoordinates() ) );
                     layoutparams1.setMargins( GraphicDrawer.minX( storage.getCoordinates() ), GraphicDrawer.minY( storage.getCoordinates() ), 0, 0 );
                     button1.setLayoutParams( layoutparams1 );
                     button1.setTag( storage.getId() );
                     button1.setText( storage.getId() );
+                    button1.setBackgroundColor( Color.TRANSPARENT );
                     button1.setTextSize( ( float ) Math.sqrt( GraphicDrawer.scaleX( storage.getCoordinates() ) ) / 2.0F );
                     final Button finalButton = button1;
                     button1.setOnClickListener( new View.OnClickListener() {
