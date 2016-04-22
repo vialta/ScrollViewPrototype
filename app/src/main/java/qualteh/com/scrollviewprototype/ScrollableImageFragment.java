@@ -49,7 +49,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 {
 
     private AnimatorSet animators = new AnimatorSet();
-    private static final float MAX_ZOOM = 3F;
+    private static final float MAX_ZOOM = 4F;
     private static final float MIN_ZOOM = 1F;
     private static double SCREEN_DENSITY;
 
@@ -71,7 +71,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     private long startTouchTimestamp;
 
     @Bind( R.id.uiContainer )FrameLayout mFrameLayout;
-    @Bind( R.id.button1 ) Button topLeftButton;
     private MapModel mMapData;
     private final Paint mPaint = new Paint();
 
@@ -451,6 +450,10 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
     public boolean onScaleBegin(ScaleGestureDetector scalegesturedetector)
     {
+        if(animators.isRunning()){
+            animators.cancel();
+        }
+
         float newX = scaleDetector.getFocusX();
         float newY = scaleDetector.getFocusY();
 

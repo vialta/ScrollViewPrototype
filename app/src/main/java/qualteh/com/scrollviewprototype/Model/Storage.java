@@ -25,12 +25,12 @@ public class Storage
     {
         for (int i = 0; i < coordinates.size(); i++)
         {
-            coordinates.set(i, Double.valueOf(((Double)coordinates.get(i)).doubleValue() * d * Consts.SIZE_MULTIPLIER));
+            coordinates.set(i, coordinates.get( i ) * d * Consts.SIZE_MULTIPLIER );
         }
 
         for (int j = 1; j < coordinates.size(); j += 2)
         {
-            coordinates.set(j, Double.valueOf(((double)Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER * d - ((Double)coordinates.get(j)).doubleValue()) + 10D * Consts.SIZE_MULTIPLIER * d));
+            coordinates.set(j, ( ( double ) Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER * d - ( Double ) coordinates.get( j ) ) + 10D * Consts.SIZE_MULTIPLIER * d );
         }
 
     }
@@ -39,12 +39,12 @@ public class Storage
     {
         for (int j = 0; j < coordinates.size(); j++)
         {
-            coordinates.set(j, Double.valueOf(((Double)coordinates.get(j)).doubleValue() * (double)i * Consts.SIZE_MULTIPLIER));
+            coordinates.set(j, ( Double ) coordinates.get( j ) * ( double ) i * Consts.SIZE_MULTIPLIER );
         }
 
         for (int k = 1; k < coordinates.size(); k += 2)
         {
-            coordinates.set(k, Double.valueOf(((double)Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER * (double)i - ((Double)coordinates.get(k)).doubleValue()) + 10D * Consts.SIZE_MULTIPLIER * (double)i));
+            coordinates.set(k, ( ( double ) Consts.DIAGRAM_HEIGHT * Consts.SIZE_MULTIPLIER * ( double ) i - ( Double ) coordinates.get( k ) ) + 10D * Consts.SIZE_MULTIPLIER * ( double ) i );
         }
 
     }

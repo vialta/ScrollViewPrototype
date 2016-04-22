@@ -221,7 +221,7 @@ public class DbHelper extends SQLiteOpenHelper
                     ", '"+
                     (list.get(j)).getStrokeColor()+
                     "' )";
-
+            Log.d("Query",query);
             sqLiteDatabase.execSQL(query);
             for (int k = 0; k < (list.get(j)).getCoordinates().size(); k += 2)
             {
@@ -240,6 +240,7 @@ public class DbHelper extends SQLiteOpenHelper
                         ", '"+
                         (list.get(j)).getId()+
                         "')";
+                Log.d("Query",query);
                 sqLiteDatabase.execSQL(query);
             }
         }
@@ -457,7 +458,7 @@ public class DbHelper extends SQLiteOpenHelper
         cursor.close();
         for (int j = 0; j < arraylist.size(); j++)
         {
-            ((Commission)arraylist.get(j)).setCoordinates(getStorageCoordinates(sqLiteDatabase, ((Commission)arraylist.get(j)).getId()));
+            ((Commission)arraylist.get(j)).setCoordinates(getCommissionsCoordinates(sqLiteDatabase, ((Commission)arraylist.get(j)).getId()));
         }
 
         return arraylist;

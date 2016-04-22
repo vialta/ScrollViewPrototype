@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+
     <FrameLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+
         android:id="@+id/contentContainer"
         android:overScrollMode="ifContentScrolls"
         android:layout_width="wrap_content"
@@ -29,12 +36,27 @@
                     android:layout_gravity="start"/>
 
 
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="New Button"
-                    android:id="@+id/button1"
-                    android:layout_gravity="start"/>
+
 
             </FrameLayout>
+
+
+
     </FrameLayout>
+
+    <!--
+    ALL NON MAP-DEDICATED UI ELEMENTS HERE
+    -->
+    <Button
+        android:text="TopLeft"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"/>
+
+    <Button
+        android:text="TopRight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"/>
+
+</FrameLayout>

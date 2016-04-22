@@ -44,7 +44,7 @@ class GraphicDrawer
 
         final FrameLayout frame = frameLayout;
         final MapModel mMapData = mapModel;
-        final List buildings = mapModel.getBuildings();
+        final List<Building> buildings = mapModel.getBuildings();
 
         final List<Double> points = mapModel.getMainCoordinates().getCoordinates();
         final List<Storage> storages = mapModel.getStorage();
@@ -58,7 +58,7 @@ class GraphicDrawer
         imageView.setImageDrawable( new Drawable() {
             @Override
             public void draw ( Canvas canvas ) {
-                paint.setStrokeWidth( mMapData.getMainCoordinates().getStrokeWidth().intValue() );
+                paint.setStrokeWidth( mMapData.getMainCoordinates().getStrokeWidth() );
                 paint.setColor( Color.parseColor( mMapData.getMainCoordinates().getStrokeColor() ) );
                 for ( int i = 0 ; i < points.size() - 2 ; i += 2 ) {
                     canvas.drawLine(   Math.round(points.get( i )) ,  Math.round( points.get( i + 1 )), Math.round( points.get( i + 2 )), Math.round( points.get( i + 3 )), paint );
@@ -90,9 +90,21 @@ class GraphicDrawer
                 for ( Iterator iterator = storages.iterator() ; iterator.hasNext() ; frame.addView( button1 ) ) {
                     Storage storage = ( Storage ) iterator.next();
                     int fillValue = storage.getStock();
-                    paint.setStrokeWidth( storage.getStrokeWidth().intValue() );
-                    paint.setStrokeWidth( 2 );
-                    paint.setColor( Color.rgb( ( int ) (fillValue*2.55), 255-(int)(fillValue*2.55),0 ) );
+                    paint.setStrokeWidth( storage.getStrokeWidth() );
+                    int color,r,g,b;
+                    if(storage.getStock() >  storage.getCapacity()){
+                        paint.setColor ( Color.YELLOW );
+                        color = Color.YELLOW;
+                    }
+                    else{
+                        color = Integer.parseInt( String.valueOf( Color.parseColor( storage.getStrokeColor() ) ) );
+                        r = (color>>16) & 0xFF;
+                        g = (color>>8) & 0xFF;
+                        b = (color>>0) & 0xFF;
+                        paint.setColor( Color.rgb( r,g,b ) );
+
+                    }
+
                     for ( int k = 0 ; k < storage.getCoordinates().size() - 2 ; k += 2 ) {
                         canvas.drawLine( (  storage.getCoordinates().get( k ) ).intValue(), (  storage.getCoordinates().get( k + 1 ) ).intValue(), (  storage.getCoordinates().get( k + 2 ) ).intValue(), (  storage.getCoordinates().get( k + 3 ) ).intValue(), paint );
                     }
@@ -120,7 +132,21 @@ class GraphicDrawer
 
                     double topHeightStorage = maxHeightStorage - ((maxHeightStorage - minHeightStorage)/100 * fillValue);
 
-                    canvas.drawRect( Math.round( minWidthStorage ) *1.0f, Math.round( topHeightStorage ) *1.0f, Math.round( maxWidthStorage ) *1.0f, Math.round( maxHeightStorage ) *1.0f, paint );
+                    r = (color>>16) & 0xFF;
+                    g = (color>>8) & 0xFF;
+                    b = (color>>0) & 0xFF;
+
+                    double redFactor   = storage.getStock() * (20.0/storage.getCapacity());
+                    double greenFactor = storage.getStock() * (30.0/storage.getCapacity());
+                    double blueFactor  = storage.getStock() * (40.0/storage.getCapacity());
+
+                    r -= redFactor;
+                    g -= greenFactor;
+                    b -= blueFactor;
+
+                    paint.setColor( Color.rgb( r,g,b ) );
+
+                    canvas.drawRect( Math.round( minWidthStorage ) *1.0f+1, Math.round( topHeightStorage ) *1.0f+1, Math.round( maxWidthStorage ) *1.0f-1, Math.round( maxHeightStorage ) *1.0f-1, paint );
 
                     button1 = new Button( ScrollableImageActivity.getActivityContext() );
                     FrameLayout.LayoutParams layoutparams1 = new FrameLayout.LayoutParams( GraphicDrawer.scaleX( storage.getCoordinates() ), GraphicDrawer.scaleY( storage.getCoordinates() ) );
@@ -139,13 +165,11 @@ class GraphicDrawer
                     });
                 }
 
-                Log.d("Commission Size", String.valueOf( commissions.size() ) );
                 for ( Iterator iterator =  commissions.iterator() ; iterator.hasNext() ;  ) {
                     Commission commission = ( Commission ) iterator.next();
 
                     paint.setStrokeWidth( commission.getStrokeWidth() );
                     paint.setColor( Color.parseColor( commission.getStrokeColor() ) );
-                    Log.d("Commisssion", String.valueOf( commission.getCoordinates().size() ) );
                     for ( int k = 0 ; k < commission.getCoordinates().size() - 2 ; k += 2 ) {
                         canvas.drawLine( ( commission.getCoordinates().get( k ) ).intValue(), ( commission.getCoordinates().get( k + 1 ) ).intValue(), ( commission.getCoordinates().get( k + 2 ) ).intValue(), ( commission.getCoordinates().get( k + 3 ) ).intValue(), paint );
                     }
