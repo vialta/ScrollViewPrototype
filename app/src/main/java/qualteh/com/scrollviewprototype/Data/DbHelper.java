@@ -425,7 +425,7 @@ public class DbHelper extends SQLiteOpenHelper
             storage.setStrokeWidth( cursor.getInt( storageStrokeWidthIndex ) );
             storage.setStrokeColor(cursor.getString(storageStrokeColorIndex));
             storage.setStock( cursor.getInt( storageStockIndex ) );
-            storage.setCapacity( cursor.getInt( storageStockIndex ) );
+            storage.setCapacity( cursor.getInt( storageCapacityIndex ) );
             arraylist.add(storage);
         }
 
@@ -638,7 +638,7 @@ public class DbHelper extends SQLiteOpenHelper
             {
                 sqlitedatabase.execSQL("UPDATE " +
                         TABLE_NAME_STORAGE_COORDINATES +
-                        "SET " +
+                        " SET " +
                         COLUMN_STORAGE_COORDINATE_X +
                         " = "+
                         (list.get(i)).getCoordinates().get(k)+
@@ -660,7 +660,7 @@ public class DbHelper extends SQLiteOpenHelper
         {
             sqlitedatabase.execSQL("UPDATE " +
                     TABLE_NAME_STORAGE +
-                    "SET " +
+                    " SET " +
                     COLUMN_STORAGE_ID +
                     "= '"+
                     (list.get(i)).getId() +
@@ -676,6 +676,7 @@ public class DbHelper extends SQLiteOpenHelper
                     COLUMN_STORAGE_STOCK+
                     " = '"+
                     ( list.get( i ) ).getStock() +
+                    "', "+
                     COLUMN_STORAGE_CAPACITY+
                     " = '"+
                     ( list.get( i ) ).getCapacity() +
@@ -692,7 +693,7 @@ public class DbHelper extends SQLiteOpenHelper
             for (int k = 0; k < (list.get(i)).getCoordinates().size(); k += 2) {
                 sqlitedatabase.execSQL("UPDATE " +
                         TABLE_NAME_COMMISSION_COORDINATES +
-                        "SET " +
+                        " SET " +
                         COLUMN_COMMISSION_COORDINATE_X+
                         " = "+
                         (list.get(i)).getCoordinates().get(k)+
@@ -711,7 +712,7 @@ public class DbHelper extends SQLiteOpenHelper
         for (i = 0; i < list.size(); i++) {
             sqlitedatabase.execSQL("UPDATE " +
                     TABLE_NAME_COMMISSION +
-                    "SET " +
+                    " SET " +
                     COLUMN_COMMISSION_ID +
                     "= '"+
                     (list.get(i)).getId() +

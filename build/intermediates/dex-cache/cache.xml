@@ -1,3 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<items version="2" />
+<items version="2" >
 
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\recyclerview-v7\23.3.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="debf30ce0a7560396b6235edef77e447006454c2">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.android.support-recyclerview-v7-23.3.0_69f358130442102fe722f23ec83f357258426eee.jar" />
+    </item>
+    <item
+        jar="C:\Users\Virgil Tanase\.gradle\caches\modules-2\files-2.1\com.squareup.okio\okio\1.6.0\98476622f10715998eacf9240d6b479f12c66143\okio-1.6.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\okio-1.6.0_bf3525afbff55a4518e1b8cc7efc91aba6585e98.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\support-vector-drawable\23.3.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="a0b5d60246cd9d4f3f2443611b3b4c25265840b5">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.android.support-support-vector-drawable-23.3.0_dcc2b1bec8c5643b0163f98073bcab308d83c6a9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Virgil Tanase\.gradle\caches\modules-2\files-2.1\com.squareup.okhttp3\okhttp\3.2.0\f7873a2ebde246a45c2a8d6f3247108b4c88a879\okhttp-3.2.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f7873a2ebde246a45c2a8d6f3247108b4c88a879">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\okhttp-3.2.0_568789c77547ce1a19c18f2af3dee61a131a49c2.jar" />
+    </item>
+    <item
+        jar="C:\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\23.3.0\support-annotations-23.3.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="db7791d75a07fef9844d06236c1c59ba7bf6997c">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\support-annotations-23.3.0_a4ea006b60a31b1ef1f45205b3aa598eb0850127.jar" />
+    </item>
+    <item
+        jar="C:\Users\Virgil Tanase\.gradle\caches\modules-2\files-2.1\com.squareup.retrofit2\converter-gson\2.0.1\2780d858273ce1bb90f6b12e1ef0d40f7741fca\converter-gson-2.0.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="02780d858273ce1bb90f6b12e1ef0d40f7741fca">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\converter-gson-2.0.1_33c3d43c00c1d3884e67c9e2952cb37c0d89aabf.jar" />
+    </item>
+    <item
+        jar="C:\Users\Virgil Tanase\.gradle\caches\modules-2\files-2.1\com.jakewharton\butterknife\7.0.1\d5d13ea991eab0252e3710e5df3d6a9d4b21d461\butterknife-7.0.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="d5d13ea991eab0252e3710e5df3d6a9d4b21d461">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\butterknife-7.0.1_a7b74164c887a654081680b0816d99f78ee74ba9.jar" />
+    </item>
+    <item
+        jar="C:\Users\Virgil Tanase\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.6.2\f1bc476cc167b18e66c297df599b2377131a8947\gson-2.6.2.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f1bc476cc167b18e66c297df599b2377131a8947">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\gson-2.6.2_9bf5f7789498806e0b88f0d8e768db3fc8e4af43.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\23.3.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="1b8e03daaa43fb0a4cd57e378167c2fd70454c1e">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.android.support-appcompat-v7-23.3.0_52e27417246404c278fd2a05b986cc7b7f50c1b5.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.mikepenz\materialdrawer\5.2.1\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="72829a4d2304ce24ed002cb29e8121a2d5c87613">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.mikepenz-materialdrawer-5.2.1_d20a92a0badf9f98337fa09f445ad2fbe4d5006e.jar" />
+    </item>
+    <item
+        jar="C:\Users\Virgil Tanase\.gradle\caches\modules-2\files-2.1\com.squareup.retrofit2\retrofit\2.0.1\27293c440d2085cde1d859528aff6e7d3b6ae40\retrofit-2.0.1.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="027293c440d2085cde1d859528aff6e7d3b6ae40">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\retrofit-2.0.1_0212eba5ff65f49f5e8b9e44faa6bfaa521d6b8e.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.mikepenz\materialize\0.8.8\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="197c431b8fc427f77e02997e299bd6b9bef58ede">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.mikepenz-materialize-0.8.8_d879cc73c2574ac84620a41017c0b59fc6ef903b.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.mikepenz\fastadapter\1.4.4\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="ef0ff196faa70b4ed0667f6f78beace9fef1f047">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.mikepenz-fastadapter-1.4.4_cec063018fe1ccf8223c21f0144aa5305424c31a.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.mikepenz\iconics-core\2.5.11\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="98a135c7935e62ac041acc1fcb148973bde828d5">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.mikepenz-iconics-core-2.5.11_0ca19682cf9227cf9654d6d4332d4905d231b2de.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\design\23.3.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="f0001e71cea6ae432a00021c6f727f5ef0f3d27e">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.android.support-design-23.3.0_e3a3a74a92544ebf43c01dd5372f469bdd96f1de.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.3.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="8a034dd16c0dfd75fe86c52c2cd581592acc684a">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.android.support-support-v4-23.3.0_4bbfed870a27b2a3e3839901117e9d33763caa46.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\support-v4\23.3.0\jars\libs\internal_impl-23.3.0.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="4da5a4d697d32497c6f85567a5112e62fdfd0676">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\internal_impl-23.3.0_212c382444e41e6c1e2048d77173c91dcec59fd5.jar" />
+    </item>
+    <item
+        jar="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\exploded-aar\com.android.support\animated-vector-drawable\23.3.0\jars\classes.jar"
+        jumboMode="false"
+        revision="23.0.2"
+        sha1="23be6993826b8fd88bbc8d14928bb3b8960d3d4e">
+        <dex dex="G:\Android\ScrollViewPrototype\ScrollViewPrototype\app\build\intermediates\pre-dexed\debug\com.android.support-animated-vector-drawable-23.3.0_bc8deca8600f2a02fac2805db9ad5c5e7d9c6b9c.jar" />
+    </item>
+
+</items>

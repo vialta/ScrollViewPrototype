@@ -19,7 +19,7 @@ public abstract class SingleFragmentActivity extends AppCompatActivity
 
     protected int getLayoutResId()
     {
-        return 0x7f040019;
+        return R.layout.activity_main;
     }
 
     protected void onCreate(Bundle bundle)

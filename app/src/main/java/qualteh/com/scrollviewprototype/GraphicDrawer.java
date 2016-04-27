@@ -4,25 +4,27 @@
 
 package qualteh.com.scrollviewprototype;
 
+
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.Toast;
-import java.util.ArrayList;
+
 import java.util.Iterator;
 import java.util.List;
 import qualteh.com.scrollviewprototype.Model.Building;
 import qualteh.com.scrollviewprototype.Model.Commission;
-import qualteh.com.scrollviewprototype.Model.MainCoordinates;
 import qualteh.com.scrollviewprototype.Model.MapModel;
 import qualteh.com.scrollviewprototype.Model.Storage;
+import qualteh.com.scrollviewprototype.Dialogs.StorageDialog;
 
 // Referenced classes of package qualteh.com.scrollviewprototype:
 //            DemoMachine, ScrollableImageActivity
@@ -34,7 +36,7 @@ class GraphicDrawer
     {
     }
 
-    public static void drawMap(ImageView imageView, final FrameLayout frameLayout, final Paint paint, final MapModel mapModel, DemoMachine demoMachine, double d)
+    public static void drawMap( ImageView imageView, final FrameLayout frameLayout, final Paint paint, final MapModel mapModel, DemoMachine demoMachine, final Fragment fragment)
     {
         paint.setStrokeJoin( Paint.Join.ROUND);
         imageView.setBackgroundColor( 0xff444444 );
@@ -58,7 +60,7 @@ class GraphicDrawer
         imageView.setImageDrawable( new Drawable() {
             @Override
             public void draw ( Canvas canvas ) {
-                paint.setStrokeWidth( mMapData.getMainCoordinates().getStrokeWidth() );
+                paint.setStrokeWidth( 2 );
                 paint.setColor( Color.parseColor( mMapData.getMainCoordinates().getStrokeColor() ) );
                 for ( int i = 0 ; i < points.size() - 2 ; i += 2 ) {
                     canvas.drawLine(   Math.round(points.get( i )) ,  Math.round( points.get( i + 1 )), Math.round( points.get( i + 2 )), Math.round( points.get( i + 3 )), paint );
@@ -88,7 +90,7 @@ class GraphicDrawer
 
                 Button button1;
                 for ( Iterator iterator = storages.iterator() ; iterator.hasNext() ; frame.addView( button1 ) ) {
-                    Storage storage = ( Storage ) iterator.next();
+                    final Storage storage = ( Storage ) iterator.next();
                     int fillValue = storage.getStock();
                     paint.setStrokeWidth( storage.getStrokeWidth() );
                     int color,r,g,b;
@@ -136,17 +138,17 @@ class GraphicDrawer
                     g = (color>>8) & 0xFF;
                     b = (color>>0) & 0xFF;
 
-                    double redFactor   = storage.getStock() * (20.0/storage.getCapacity());
-                    double greenFactor = storage.getStock() * (30.0/storage.getCapacity());
-                    double blueFactor  = storage.getStock() * (40.0/storage.getCapacity());
+                    double redFactor   = storage.getStock() * (250.0/storage.getCapacity());
+                    double greenFactor = storage.getStock() * (170.0/storage.getCapacity());
+                    double blueFactor  = storage.getStock() * (175.0/storage.getCapacity());
 
                     r -= redFactor;
                     g -= greenFactor;
-                    b -= blueFactor;
+                    b += blueFactor;
 
                     paint.setColor( Color.rgb( r,g,b ) );
 
-                    canvas.drawRect( Math.round( minWidthStorage ) *1.0f+1, Math.round( topHeightStorage ) *1.0f+1, Math.round( maxWidthStorage ) *1.0f-1, Math.round( maxHeightStorage ) *1.0f-1, paint );
+                    canvas.drawRect( Math.round( minWidthStorage ) *1.0f-1, Math.round( topHeightStorage ) *1.0f-1, Math.round( maxWidthStorage ) *1.0f-1, Math.round( maxHeightStorage ) *1.0f-1, paint );
 
                     button1 = new Button( ScrollableImageActivity.getActivityContext() );
                     FrameLayout.LayoutParams layoutparams1 = new FrameLayout.LayoutParams( GraphicDrawer.scaleX( storage.getCoordinates() ), GraphicDrawer.scaleY( storage.getCoordinates() ) );
@@ -156,11 +158,15 @@ class GraphicDrawer
                     button1.setText( storage.getId() );
                     button1.setBackgroundColor( Color.TRANSPARENT );
                     button1.setTextSize( ( float ) Math.sqrt( GraphicDrawer.scaleX( storage.getCoordinates() ) ) / 2.0F );
-                    final Button finalButton = button1;
                     button1.setOnClickListener( new View.OnClickListener() {
                         @Override
                         public void onClick ( View v ) {
-                            Toast.makeText( ScrollableImageActivity.getActivityContext(), ( CharSequence ) finalButton.getTag(), Toast.LENGTH_SHORT ).show();
+                            FragmentManager fragmentManager = fragment.getFragmentManager();
+                            StorageDialog storageDialog = new StorageDialog();
+                            storageDialog.setStockString( String.valueOf( storage.getStock() ) );
+                            storageDialog.setCapacityString( String.valueOf( storage.getCapacity() ) );
+                            Log.d("Test",storage.getStock()+" "+storage.getCapacity());
+                            storageDialog.show(fragmentManager, "Storage "+storage.getId());
                         }
                     });
                 }

@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -32,8 +33,11 @@ import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import qualteh.com.scrollviewprototype.API.ApiInterface;
 import qualteh.com.scrollviewprototype.Data.DbHelper;
+import qualteh.com.scrollviewprototype.Dialogs.TopLeftDialog;
+import qualteh.com.scrollviewprototype.Dialogs.TopRightDialog;
 import qualteh.com.scrollviewprototype.Model.Building;
 import qualteh.com.scrollviewprototype.Model.MapModel;
 import qualteh.com.scrollviewprototype.Model.Storage;
@@ -45,16 +49,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 
 
-public class ScrollableImageFragment extends Fragment implements View.OnClickListener, ScaleGestureDetector.OnScaleGestureListener
-{
+public class ScrollableImageFragment extends Fragment implements View.OnClickListener, ScaleGestureDetector.OnScaleGestureListener {
 
     private AnimatorSet animators = new AnimatorSet();
     private static final float MAX_ZOOM = 4F;
     private static final float MIN_ZOOM = 1F;
     private static double SCREEN_DENSITY;
 
-
-    int scaleAnimCounter=0;
+    @Bind( R.id.buttonMenu ) Button topLeftButton;
+    @Bind( R.id.buttonNotifications ) Button topRightButton;
 
     private boolean animationIsRunning;
     private DemoMachine demoMachine;
@@ -138,7 +141,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
         machineView.setImageDrawable( new Drawable() {
             public void draw ( Canvas canvas ) {
                 Paint paint = new Paint();
-                paint.setColor( 0xffff0000 );
+                paint.setColor( Color.RED );
                 paint.setStyle( Paint.Style.FILL );
                 canvas.drawCircle( getResources().getDisplayMetrics().density * 20f, getResources().getDisplayMetrics().density * 20f, getResources().getDisplayMetrics().density * 20f, paint );
             }
@@ -253,7 +256,23 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             sharedpreferences.edit().putBoolean("PREFS_FIRST_TIME", false).apply();
         }
         mMapData = dbhelper.getMapModel( sqlitedatabase );
-        GraphicDrawer.drawMap(img, mFrameLayout, mPaint, mMapData, demoMachine, SCREEN_DENSITY);
+        GraphicDrawer.drawMap(img, mFrameLayout, mPaint, mMapData, demoMachine, this);
+    }
+
+    @OnClick(R.id.buttonMenu )
+    public void topLeftButton(View view){
+        Log.d("Test","Top Left");
+        FragmentManager fragmentManager = getFragmentManager();
+        TopLeftDialog topLeftDialog = new TopLeftDialog();
+        topLeftDialog.show( fragmentManager, "Top Left" );
+    }
+
+    @OnClick(R.id.buttonNotifications )
+    public void topRightButton(View view){
+        Log.d("Test","Top Right");
+        FragmentManager fragmentManager = getFragmentManager();
+        TopRightDialog topRightDialog = new TopRightDialog();
+        topRightDialog.show( fragmentManager, "Top Right" );
     }
 
     public void demoButtonClicked() {

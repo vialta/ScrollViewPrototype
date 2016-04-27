@@ -1,3 +1,17 @@
 <resources>
+    <string-array name="leftMenu">
+        <item>Optiune Stanga 1</item>
+        <item>Optiune Stanga 2</item>
+        <item>Optiune Stanga 3</item>
+        <item>Optiune Stanga 4</item>
+        <item>Optiune Stanga 5</item>
+    </string-array>
+    <string-array name="rightMenu">
+        <item>Optiune Dreapta 1</item>
+        <item>Optiune Dreapta 2</item>
+        <item>Optiune Dreapta 3</item>
+        <item>Optiune Dreapta 4</item>
+        <item>Optiune Dreapta 5</item>
+    </string-array>
     <string name="app_name">Prototip Harta</string>
 </resources>
