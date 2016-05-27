@@ -13,7 +13,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -33,11 +32,8 @@ import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 import qualteh.com.scrollviewprototype.API.ApiInterface;
 import qualteh.com.scrollviewprototype.Data.DbHelper;
-import qualteh.com.scrollviewprototype.Dialogs.TopLeftDialog;
-import qualteh.com.scrollviewprototype.Dialogs.TopRightDialog;
 import qualteh.com.scrollviewprototype.Model.Building;
 import qualteh.com.scrollviewprototype.Model.MapModel;
 import qualteh.com.scrollviewprototype.Model.Storage;
@@ -56,16 +52,12 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
     private static final float MIN_ZOOM = 1F;
     private static double SCREEN_DENSITY;
 
-    @Bind( R.id.buttonMenu ) Button topLeftButton;
-    @Bind( R.id.buttonNotifications ) Button topRightButton;
-
     private boolean animationIsRunning;
     private DemoMachine demoMachine;
     @Bind( R.id.errorText )TextView firstTimeTextError;
     public GestureDetector gestureDetector;
     @Bind( R.id.vectorTest )ImageView img;
     private float lastScaleFactor;
-    private float lastScale=1f;
 
     private int previousScrollX;
     private int previousScrollY;
@@ -259,22 +251,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
         GraphicDrawer.drawMap(img, mFrameLayout, mPaint, mMapData, demoMachine, this);
     }
 
-    @OnClick(R.id.buttonMenu )
-    public void topLeftButton(View view){
-        Log.d("Test","Top Left");
-        FragmentManager fragmentManager = getFragmentManager();
-        TopLeftDialog topLeftDialog = new TopLeftDialog();
-        topLeftDialog.show( fragmentManager, "Top Left" );
-    }
-
-    @OnClick(R.id.buttonNotifications )
-    public void topRightButton(View view){
-        Log.d("Test","Top Right");
-        FragmentManager fragmentManager = getFragmentManager();
-        TopRightDialog topRightDialog = new TopRightDialog();
-        topRightDialog.show( fragmentManager, "Top Right" );
-    }
-
     public void demoButtonClicked() {
         if (!animationIsRunning)
         {
@@ -423,10 +399,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                 mFrameLayout.requestLayout();
                 mainContainer.getHitRect( scrollBounds );
                 if(mFrameLayout.getGlobalVisibleRect( scrollBounds )) {
-                    if ( !(scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
-                        lastScale=scale;
-                    }
-                    else{
+                    if ( (scrollBounds.left > 0 || scrollBounds.right < getResources().getDisplayMetrics().widthPixels || scrollBounds.top > Math.round( 24 * getResources().getDisplayMetrics().density + 1 ) || scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels) ) {
                         if(scale>1) {
                             if ( scrollBounds.left > 0 ) {
                                 mainContainer.setPivotX( getResources().getDisplayMetrics().widthPixels );
@@ -455,7 +428,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
                         if ( scrollBounds.bottom < getResources().getDisplayMetrics().heightPixels ) {
                             mainContainer.scrollBy(0,scrollBounds.bottom-getResources().getDisplayMetrics().heightPixels);
                         }
-
                     }
                 }
                 lastScaleFactor = factor;
@@ -467,8 +439,7 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
        return true;
     }
 
-    public boolean onScaleBegin(ScaleGestureDetector scalegesturedetector)
-    {
+    public boolean onScaleBegin(ScaleGestureDetector scalegesturedetector) {
         if(animators.isRunning()){
             animators.cancel();
         }
@@ -487,7 +458,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
 
     public void onScaleEnd(ScaleGestureDetector scalegesturedetector) {
         lastScaleTimestamp = System.currentTimeMillis();
-
     }
 
     public void setMachineView(ImageView imageview)
@@ -514,8 +484,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             }
             s = (new StringBuilder()).append(s).append("/").toString();
         }
-
-        Log.d("WTF", s);
     }
 
     void logMainCoords() {
@@ -533,7 +501,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             }
             i++;
         }
-        Log.d( "WTF", s );
     }
 
     void logStorageCoords() {
@@ -555,8 +522,6 @@ public class ScrollableImageFragment extends Fragment implements View.OnClickLis
             }
             s = (new StringBuilder()).append(s).append("/").toString();
         }
-
-        Log.d( "WTF", s );
     }
 
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {

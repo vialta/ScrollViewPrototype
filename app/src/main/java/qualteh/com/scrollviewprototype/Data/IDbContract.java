@@ -5,8 +5,7 @@
 package qualteh.com.scrollviewprototype.Data;
 
 
-public interface IDbContract
-{
+public interface IDbContract {
 
     public static final String BUILDING_COLUMNS[] = {
         "_id", "_map_id", "_name", "_building_stroke_width", "_building_stroke_color"

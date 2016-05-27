@@ -25,6 +25,7 @@ public class DemoMachine extends Machine
     public int demoUICoordinateY[] = {
         750, 695, 695, 715
     };
+
     private int prevIndex;
 
     public DemoMachine()
@@ -32,8 +33,7 @@ public class DemoMachine extends Machine
         prevIndex = -1;
     }
 
-    public void newRandomCoordinate()
-    {
+    public void newRandomCoordinate() {
         Random random = new Random();
         int i;
         do
@@ -44,4 +44,5 @@ public class DemoMachine extends Machine
         getMachinePosition().calculateUIPosition();
         prevIndex = i;
     }
+
 }

@@ -8,6 +8,7 @@ import android.util.AttributeSet;
  * Created by Virgil Tanase on 25.04.2016.
  */
 public class CustomDrawerLayout extends DrawerLayout {
+
     public CustomDrawerLayout ( Context context, AttributeSet attrs ) {
         super( context, attrs );
     }

@@ -6,14 +6,9 @@ package qualteh.com.scrollviewprototype;
 
 import qualteh.com.scrollviewprototype.Model.Position;
 
-public class Machine
-{
+public class Machine {
 
     private Position machinePosition;
-
-    public Machine()
-    {
-    }
 
     public Position getMachinePosition()
     {
@@ -24,4 +19,5 @@ public class Machine
     {
         machinePosition = position;
     }
+
 }

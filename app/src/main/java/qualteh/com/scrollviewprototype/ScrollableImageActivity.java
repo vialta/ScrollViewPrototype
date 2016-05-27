@@ -60,8 +60,8 @@ public class ScrollableImageActivity extends SingleFragmentActivity
         return mFragment.gestureDetector.onTouchEvent(motionevent);
     }
 
-    protected void onCreate(Bundle bundle)
-    {
+    protected void onCreate(Bundle bundle) {
+
         super.onCreate(bundle);
         ButterKnife.bind(this);
 

@@ -8,22 +8,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 
-public abstract class SingleFragmentActivity extends AppCompatActivity
-{
-
-    public SingleFragmentActivity()
-    {
-    }
+public abstract class SingleFragmentActivity extends AppCompatActivity {
 
     protected abstract Fragment createFragment();
 
-    protected int getLayoutResId()
-    {
+    protected int getLayoutResId() {
         return R.layout.activity_main;
     }
 
-    protected void onCreate(Bundle bundle)
-    {
+    protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(getLayoutResId());
     }

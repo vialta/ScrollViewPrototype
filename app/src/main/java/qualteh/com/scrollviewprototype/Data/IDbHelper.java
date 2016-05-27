@@ -13,8 +13,7 @@ import qualteh.com.scrollviewprototype.Model.MainCoordinates;
 import qualteh.com.scrollviewprototype.Model.MapModel;
 import qualteh.com.scrollviewprototype.Model.Storage;
 
-public interface IDbHelper
-{
+public interface IDbHelper {
 
     public abstract void addBuildings ( SQLiteDatabase sqLiteDatabase, List<Building> list, int i );
 
@@ -65,4 +64,5 @@ public interface IDbHelper
     public abstract void updateStorages ( SQLiteDatabase sqlitedatabase, List<Storage> list, int i );
 
     public abstract void updateCommissions( SQLiteDatabase sqLiteDatabase, List<Commission> list, int i);
+
 }

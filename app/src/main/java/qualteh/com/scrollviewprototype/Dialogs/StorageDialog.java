@@ -94,4 +94,5 @@ public class StorageDialog extends AppCompatDialogFragment implements View.OnCli
                 break;
         }
     }
+
 }

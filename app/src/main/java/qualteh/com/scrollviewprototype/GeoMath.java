@@ -6,15 +6,9 @@ package qualteh.com.scrollviewprototype;
 
 import qualteh.com.scrollviewprototype.Model.Position;
 
-public class GeoMath
-{
+public class GeoMath {
 
-    public GeoMath()
-    {
-    }
-
-    public static Position calculatePosition(Position position)
-    {
+    public static Position calculatePosition(Position position) {
         Position position1 = new Position(0.0D, 0.0D);
         double d1 = 42D * 0.017453292519943295D;
         double d = Math.cos(d1);
@@ -25,4 +19,5 @@ public class GeoMath
         position1.calculateUIPosition();
         return position1;
     }
+
 }

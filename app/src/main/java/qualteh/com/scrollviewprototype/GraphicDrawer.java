@@ -29,15 +29,10 @@ import qualteh.com.scrollviewprototype.Dialogs.StorageDialog;
 // Referenced classes of package qualteh.com.scrollviewprototype:
 //            DemoMachine, ScrollableImageActivity
 
-class GraphicDrawer
-{
+class GraphicDrawer {
 
-    GraphicDrawer()
-    {
-    }
+    public static void drawMap( ImageView imageView, final FrameLayout frameLayout, final Paint paint, final MapModel mapModel, DemoMachine demoMachine, final Fragment fragment) {
 
-    public static void drawMap( ImageView imageView, final FrameLayout frameLayout, final Paint paint, final MapModel mapModel, DemoMachine demoMachine, final Fragment fragment)
-    {
         paint.setStrokeJoin( Paint.Join.ROUND);
         imageView.setBackgroundColor( 0xff444444 );
         Object obj = mapModel.getMainCoordinates().getCoordinates();
@@ -201,8 +196,7 @@ class GraphicDrawer
         } );
     }
 
-    private static int maxX(List list)
-    {
+    private static int maxX(List list) {
         int j = ((Double)list.get(0)).intValue();
         for (int i = 0; i < list.size();)
         {
@@ -218,8 +212,7 @@ class GraphicDrawer
         return j;
     }
 
-    private static int maxY(List list)
-    {
+    private static int maxY(List list) {
         int j = ((Double)list.get(1)).intValue();
         for (int i = 1; i < list.size();)
         {
@@ -235,9 +228,7 @@ class GraphicDrawer
         return j;
     }
 
-    private static int minX(List list)
-    {
-        int j = ((Double)list.get(0)).intValue();
+    private static int minX(List list) {int j = ((Double)list.get(0)).intValue();
         for (int i = 0; i < list.size();)
         {
             int k = j;
@@ -252,8 +243,7 @@ class GraphicDrawer
         return j;
     }
 
-    private static int minY(List list)
-    {
+    private static int minY(List list) {
         int j = ((Double)list.get(1)).intValue();
         for (int i = 1; i < list.size();)
         {
@@ -269,19 +259,14 @@ class GraphicDrawer
         return j;
     }
 
-    private static int scaleX(List list)
-    {
+    private static int scaleX(List list) {
         int i = minX(list);
         return maxX(list) - i;
     }
 
-    private static int scaleY(List list)
-    {
+    private static int scaleY(List list) {
         int i = minY(list);
         return maxY(list) - i;
     }
-
-
-
 
 }
